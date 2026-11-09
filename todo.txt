@@ -139,4 +139,4 @@ FASE 4 - EXPERIMENTOS E TEXTO
 INFRA / PARALELO
 ================================================================================
 [x] git init + commit inicial na branch main; .gitignore sem .bak, cache e relatorio.html (2026-11-09)
-[ ] Criar o repositório PRIVADO no GitHub e fazer o primeiro push
+[x] Repositório no GitHub: github.com/g06rossi/tg-celula-solda (privado), primeiro push feito (2026-11-09)

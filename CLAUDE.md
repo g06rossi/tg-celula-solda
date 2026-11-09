@@ -190,7 +190,7 @@ TG/
     ├── diagnostico_plant.py  listar_attrs/ler_attr para descobrir a API do Plant (colar no PythonModule)
     └── resultados/           JSONs dos episódios + relatorio.html
 ```
-O workspace **é um repositório Git** (branch `main`, desde 2026-11-09). O `.gitignore` exclui `*.spp.bak`, `__pycache__` e o `relatorio.html` (regenerável). Os `.spp` (~3,8 MB cada) e os PDFs entram no repositório, que deve ser **privado** (há documentação interna da FMEIB e PDFs de terceiros). **Commitar a cada etapa concluída** (o usuário faz o push).
+O workspace **é um repositório Git** (branch `main`, desde 2026-11-09), com remoto `origin` = **github.com/g06rossi/tg-celula-solda** (privado). O `.gitignore` exclui `*.spp.bak`, `__pycache__` e o `relatorio.html` (regenerável). Os `.spp` (~3,8 MB cada) e os PDFs entram no repositório, que deve ser **privado** (há documentação interna da FMEIB e PDFs de terceiros). **Commitar a cada etapa concluída** (o usuário faz o push).
 
 ### 5.2 Scripts
 - `scripts/coleta_plant.py`: código para **colar no final do PythonModule**.
@@ -336,3 +336,4 @@ Velocidade realista (item 2): **não há fonte forte para a V**. A regra de 3,3 
 - **2026-11-09:** **v4 validada e adotada como baseline** (154,717 kWh, 0,355 kWh/carroceria, tempos idênticos à v3). Controlador IRC5 como hipótese de projeto (a célula não existe fisicamente). Velocidade do skid de 0,3 m/s pelo datasheet EFQ. Methods R3/R4 conferidos. `PARAMETROS` ganhou a velocidade do skid, o takt e o controlador. Próximo passo: item 2 (tempos de movimento realistas).
 - **2026-11-09:** sem RobotStudio, criado `scripts/gerar_tt.py` (modelo cinemático com dados da spec ABB: 24 m/s², PSt 0,17 s, 1,6 m/s). Cenários K1/K2/K3/H e regra de Cho. Proposta: H (K2 + 0,73 s/trecho, calibrado em 3,3 s/ponto) como central. Os ciclos dos robôs caem de 73–105 s para 20–39 s em qualquer cenário, contra o takt de 132 s.
 - **2026-11-09:** `git init` + commit inicial (modelos v1–v4, scripts, resultados, referências). Falta criar o repositório privado no GitHub e fazer o push.
+- **2026-11-09:** primeiro push para github.com/g06rossi/tg-celula-solda (branch `main` rastreando `origin/main`).

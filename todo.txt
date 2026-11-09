@@ -138,4 +138,5 @@ FASE 4 - EXPERIMENTOS E TEXTO
 ================================================================================
 INFRA / PARALELO
 ================================================================================
-[ ] git init no workspace (.spp fora ou via Git LFS)
+[x] git init + commit inicial na branch main; .gitignore sem .bak, cache e relatorio.html (2026-11-09)
+[ ] Criar o repositório PRIVADO no GitHub e fazer o primeiro push

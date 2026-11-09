@@ -190,7 +190,7 @@ TG/
     ├── diagnostico_plant.py  listar_attrs/ler_attr para descobrir a API do Plant (colar no PythonModule)
     └── resultados/           JSONs dos episódios + relatorio.html
 ```
-O workspace **não é um repositório git** ainda (recomendado `git init`; `.spp` fora ou via Git LFS).
+O workspace **é um repositório Git** (branch `main`, desde 2026-11-09). O `.gitignore` exclui `*.spp.bak`, `__pycache__` e o `relatorio.html` (regenerável). Os `.spp` (~3,8 MB cada) e os PDFs entram no repositório, que deve ser **privado** (há documentação interna da FMEIB e PDFs de terceiros). **Commitar a cada etapa concluída** (o usuário faz o push).
 
 ### 5.2 Scripts
 - `scripts/coleta_plant.py`: código para **colar no final do PythonModule**.
@@ -335,3 +335,4 @@ Velocidade realista (item 2): **não há fonte forte para a V**. A regra de 3,3 
 - **2026-11-09:** prints do `ENTRADA_BIY` (intervalo constante de 2:12 = takt já imposto, MU selection Percentage) e do skid (8,05 m a 0,3 m/s = 26,83 s). `listar_attrs` revelou `EnergyTargetState`, `EnergyPause*State`, `PowerInput*` e `TransitionTime*`. Resultados reorganizados: `base` → `ic_original`, `r2_sedan` → `v3_r2_10soldas`, e os testes `tt_volta`/`wait_tempoSolda` foram para `scripts/resultados/_testes/`.
 - **2026-11-09:** **v4 validada e adotada como baseline** (154,717 kWh, 0,355 kWh/carroceria, tempos idênticos à v3). Controlador IRC5 como hipótese de projeto (a célula não existe fisicamente). Velocidade do skid de 0,3 m/s pelo datasheet EFQ. Methods R3/R4 conferidos. `PARAMETROS` ganhou a velocidade do skid, o takt e o controlador. Próximo passo: item 2 (tempos de movimento realistas).
 - **2026-11-09:** sem RobotStudio, criado `scripts/gerar_tt.py` (modelo cinemático com dados da spec ABB: 24 m/s², PSt 0,17 s, 1,6 m/s). Cenários K1/K2/K3/H e regra de Cho. Proposta: H (K2 + 0,73 s/trecho, calibrado em 3,3 s/ponto) como central. Os ciclos dos robôs caem de 73–105 s para 20–39 s em qualquer cenário, contra o takt de 132 s.
+- **2026-11-09:** `git init` + commit inicial (modelos v1–v4, scripts, resultados, referências). Falta criar o repositório privado no GitHub e fazer o push.

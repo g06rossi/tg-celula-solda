@@ -1,0 +1,141 @@
+================================================================================
+ TCC - INDÚSTRIA 5.0 + IA NUMA CÉLULA DE SOLDA A PONTO (Plant Simulation 2404)
+================================================================================
+
+META DO PROJETO
+---------------
+O que queremos implementar:
+  Um gêmeo digital da célula de solda a ponto automotiva (4 robôs ABB IRB 6700,
+  hatch e sedan), herdado da IC, com parâmetros físicos que tenham fonte.
+  Nele, um agente de aprendizado por reforço (PPO, stable-baselines3) decide
+  quando cada robô entra em standby e quando volta a operar, para reduzir o
+  consumo de energia.
+
+Aonde queremos chegar:
+  Responder: "como otimizar o consumo energético de uma célula de solda a ponto
+  sem degradar a produtividade nem sobrecarregar o operador, mesmo sob falhas?"
+  Para isso, mostrar com experimentos (cenários x políticas x réplicas, IC 95%)
+  que a política de RL reduz o kWh por carroceria em comparação com:
+  (a) sem standby, (b) timeout fixo e (c) timeout otimizado. Isso nos cenários
+  normal, com falhas e com mix alto de SEDAN, mantendo o throughput (~437/16 h)
+  e a carga do operador dentro do limite.
+  Cada pilar da Indústria 5.0 vira um KPI medido no modelo:
+    - sustentabilidade -> kWh/carroceria e pico de potência
+    - foco no humano   -> ocupação, deslocamento e pausas do operador
+    - resiliência      -> queda e recuperação do throughput sob falhas e variação de mix/demanda
+
+Legenda: [ ] a fazer   [~] em andamento   [x] feito (com data)
+         [M] mínimo   [D] desejável   [B] bônus
+Detalhes de cada item: CLAUDE.md (seções 4, 6 e 9).
+
+================================================================================
+AGORA
+================================================================================
+[x] Validar o pipeline de resultados com dados reais do Plant (2026-11-09)
+    [x] Ajustar a pasta de resultados para scripts\resultados (2026-11-09)
+    [x] Instalar o plotly e testar gerar_relatorio.py com dados sintéticos (2026-11-09)
+    [x] Colar coleta_plant.py no PythonModule, recriar o EndSim, variáveis str_cenario/int_replica (2026-11-09)
+    [x] 1º episódio de 16 h (base_r01): throughput 436, 744,37 kWh, igual à IC (2026-11-09)
+    [x] relatorio.html gerado com dados reais (2026-11-09)
+    [x] Generator (amostrar_gen, 60 s) e Reset (limpar_episodio) (2026-11-09)
+    [x] base_r01 + base_r02: 961 pontos, idênticos (modelo determinístico), 4 gráficos OK (2026-11-09)
+    [x] Ajustar o relatório: rótulos por estado, KPI de % em solda, nota de potência média de 60 s (2026-11-09)
+    [x] Atualizar PARAMETROS + ROTULOS_ESTADO no coleta_plant.py com as fontes da IC (2026-11-09)
+    [x] Colar o coleta_plant.py novo no PythonModule e rodar base_r01/r02 de novo (2026-11-09)
+    [x] Resultados organizados: ic_original, v3_r2_10soldas; testes em resultados/_testes/ (2026-11-09)
+
+[x] Teste A/B da volta P10->home: idêntico, sem bug (o modelo já usa a volta) (2026-11-09)
+[x] Pesquisa: potência do robô ocioso/standby e energia real por ponto de solda -> z_references/fontes-parametros.md (2026-11-09)
+
+================================================================================
+FASE 0 - SANEAR O MODELO BASE
+================================================================================
+[~] [M] 1. Tabelas de trajetória (TT/TC)
+    [x] Analisar os Methods def_* e as tabelas (2026-11-09)
+    [x] Diagnosticar o erro P10->home digitado na coluna de P1 (2026-11-09)
+    [x] Teste A/B: sem efeito; tempos medidos = projeto incluindo a volta (2026-11-09)
+    [x] Diagnóstico: R2 SEDAN deve soldar 10x e faz 9 (P10 sem solda). Explica o desvio de 6,6 kWh do R2 na IC (2026-11-09)
+    [x] Corrigido na v3: R2 SEDAN com 10 soldas; validado (+6,28 kWh só no R2). Nova baseline 750,66 kWh (2026-11-09)
+    [x] def_inPosition/def_exitR2 da v3 e def_*R3/R4 exportados (2026-11-09)
+    [x] Script Python que gera as TT completas e simétricas a partir das TC: scripts/gerar_tt.py (2026-11-09)
+
+[x] v4 do modelo: potências com fonte (Fase 0, item 3) (2026-11-09)
+    [x] Desenho inicial da v4 (depois revisto: solda no Standby, economia no Off) (2026-11-09)
+    [x] Criado scripts/diagnostico_plant.py (listar_attrs, ler_attr) (2026-11-09)
+    [x] Teste "wait" no def_entranceR1 (cenário wait_tempoSolda): NÃO serve. O wait não segura o robô; a solda some do
+        ciclo (R1 -3489,6 s de Standby -> Waiting/Empty; ciclo do sedan 8,0 s mais curto). Manter o startPause (2026-11-09)
+    [x] Decisão: Standby = "Soldando" 4,59 kW (0,84 + 6 kJ/1,6 s); Off = economia/freios 0,17 kW; Off->Operational = tempo de retomada (2026-11-09)
+    [x] Print da aba Energy do robô e do skid: o Plant tem 6 tempos de transição nativos (todos 0 hoje). Skid com Failed e Off = 2,2 kW (errado, ainda sem efeito) (2026-11-09)
+    [x] listar_attrs no robô: EnergyTargetState, EnergyPause*State, PowerInput*, TransitionTime* (2026-11-09)
+    [x] ler_attr: EnergyPauseStartState='Standby', EnergyPauseEndState='Previous state', EnergyTargetState='Operational', EnergyCurrentState='Operational' (2026-11-09)
+    [x] coleta_plant.py: PARAMETROS e ROTULOS_ESTADO da v4 prontos (2026-11-09)
+    [x] v4 montada no Plant: robôs 2,6 / 0,84 / 4,59 / 0,17 kW; skid Off e Failed = 0 (2026-11-09)
+    [x] Controlador = IRC5 como hipótese de projeto (a célula de referência não existe fisicamente) (2026-11-09)
+    [x] v4 validada: tempos idênticos à v3 (dif 0,000 s), 436 carrocerias, 154,717 kWh = previsão; 0,355 kWh/carroceria (2026-11-09)
+    [ ] Colar de novo o coleta_plant.py (3 parâmetros novos: velocidade do skid, takt, controlador) na próxima rodada
+
+[~] [M] 2. Separar o tempo do robô do takt <- AGORA
+    [x] ENTRADA_BIY: intervalo Const 2:12 (takt já imposto), Percentage com ListaBIW. SKID: 8,05 m a 0,3 m/s = 26,83 s (2026-11-09)
+    [x] Velocidade do skid 0,3 m/s: datasheet Expert-Tünkers EFQ, segundo o autor (conferir a página ao citar) (2026-11-09)
+    [x] def_entranceR2..4 / def_exitR2..4 iguais aos do R1 (o R2 tem a 10ª solda do sedan) (2026-11-09)
+    [x] Sem RobotStudio. Modelo cinemático com dados ABB (1,6 m/s, 24 m/s², PSt 0,17 s; spec rev. N 1.5.5/1.8.2) (2026-11-09)
+    [x] scripts/gerar_tt.py: cenários K1/K2/K3 (cinemáticos), H (K2 + 0,73 s/trecho, calibrado em 3,3 s/ponto) e regra de Cho (2026-11-09)
+    [ ] Usuário aprovar o cenário central (proposta: H) e a faixa de sensibilidade (K1 a regra de Cho)
+    [ ] Gerar as 8 TT do cenário escolhido e colar no Plant (v5)
+    [x] Takt de 132 s já imposto no ENTRADA_BIY (Interval Const 2:12) (2026-11-09)
+    [ ] Comparar a versão com V realista contra a v4: mesmo throughput, ociosidade visível -> 1º resultado do TCC
+
+[x] [M] 3. Potências por estado com fonte (2026-11-09)
+    [x] Unidade (kWh) e potências da IC levantadas no relatório final (2026-11-09)
+    [x] Pesquisa: ocioso 0,84 kW / freios 0,17 kW (ABB 3HAC044265 rev. N) (2026-11-09)
+    [x] Pesquisa: solda 5-11 kJ/ponto na rede (Li et al. 2004); modelo usa 144 kJ (2026-11-09)
+    [x] Datasheet GWT C9 validado: 90 kVA = potência S50 do transformador, não consumo (a IC leu como 90 kW) (2026-11-09)
+    [x] Decisão: energia por ponto da literatura (~6 kJ, faixa 5-11) para o KPI; 90 kVA só como limite de pico (2026-11-09)
+    [ ] Tempo/energia de retomada: sem fonte A -> parâmetro de sensibilidade (0,2-2 s) -> Fase 1 (TransitionTimeOffToOperational)
+    [x] Solda mantida no Standby (4,59 kW, o wait não serve); economia vai para o Off (0,17 kW); PARAMETROS atualizado (2026-11-09)
+
+[ ] [M] 4. Variabilidade: mix aleatório (ListaBIW), tempos com distribuição, 5-10 réplicas
+    [ ] Confirmar se o MU selection = Percentage sorteia (mudar a semente e ver se o mix muda)
+[ ] [M] 5. KPIs: kWh/carroceria (principal), throughput, ociosidade, tempo por estado
+[ ] [D] 5b. Pico de potência (hoje 360 kW, só na SEDAN)
+
+================================================================================
+PROTÓTIPO DE RL (antecipado: maior risco técnico)
+================================================================================
+[ ] Escolher a integração: (a) SB3 em thread com filas, (b) COM/pywin32, (c) laço próprio
+[ ] Ciclo decisão -> Plant -> recompensa funcionando com uma política aleatória
+
+================================================================================
+FASE 1 - PILARES DA INDÚSTRIA 5.0
+================================================================================
+[ ] [M] 6. Standby com custo de retomada + baseline com timeout fixo
+[ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda
+[ ] [D] 7b. Modo degradado
+[ ] [M] 8. Operador (Worker/WorkerPool/Broker/FootPath): troca das capas a cada N soldas, atendimento de falhas
+[ ] [D] 8b. Inspeção por amostragem
+
+================================================================================
+FASE 2 - OTIMIZAÇÃO CLÁSSICA (BASELINES)
+================================================================================
+[ ] [M] 9. Sequência ótima de pontos por robô (força bruta ou PD, 9!)
+[ ] [D] 10. Distribuir os 40 pontos entre os robôs (GA/NSGA-II)
+[ ] [M] 11. Timeout de standby otimizado (ExperimentManager/GAWizard)
+
+================================================================================
+FASE 3 - APRENDIZADO POR REFORÇO
+================================================================================
+[ ] [M] 12. Agente PPO: estado, ação (standby on/off) e recompensa
+[ ] [M] 13. Comparar as 4 políticas x 3 cenários
+[ ] [B] 14. LLM/Copilot como interface what-if
+
+================================================================================
+FASE 4 - EXPERIMENTOS E TEXTO
+================================================================================
+[ ] [M] 15. Cenários x políticas x réplicas, com IC 95%
+[ ] [M] 16. Sensibilidade a potências e custo de retomada
+[ ] [M] 17. Atualizar a revisão sistemática (I5.0, RL + DES, energia em robôs) e corrigir as inconsistências da IC
+
+================================================================================
+INFRA / PARALELO
+================================================================================
+[ ] git init no workspace (.spp fora ou via Git LFS)

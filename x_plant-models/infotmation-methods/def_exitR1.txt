@@ -1,0 +1,13 @@
+-- //==========// SAIDA R1 //==========//
+
+-- Se nao for o ponto de limpeza, deve aguardar o tempo da solda e somar um ponto
+if int_pontoR1 < 9
+	int_pontoR1 := int_pontoR1 + 1
+	?.startPause(float_tempoSolda)
+	@.move
+
+-- Se for o ponto de limpeza, deve resetar a variavel e seguir sem pausa
+else
+	int_pontoR1 := 0
+	@.move
+end

@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+
+# Backups automáticos do Plant Simulation
+*.spp.bak
+
+# Relatório gerado (refazer com: C:\Python315\python.exe scripts\gerar_relatorio.py)
+scripts/resultados/relatorio.html
+
+# Arquivos temporários do Office / sistema
+~$*
+Thumbs.db
+desktop.ini

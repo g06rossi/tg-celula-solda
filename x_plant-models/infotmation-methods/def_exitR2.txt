@@ -1,0 +1,17 @@
+-- //==========// SAIDA R2 //==========//
+
+-- Se nao for o ponto de limpeza, deve aguardar o tempo da solda e somar um ponto
+if int_pontoR2 < 9
+	int_pontoR2 := int_pontoR2 + 1
+	?.startPause(float_tempoSolda)
+	@.move
+
+-- Se for o ponto de limpeza, deve resetar a variavel e seguir sem pausa
+else
+	int_pontoR2 := 0
+	-- No sedan, o P10 do R2 e um ponto de solda real (10a solda)
+	if str_modeloAtual = "BIY_SEDAN" then
+		?.startPause(float_tempoSolda)
+	end
+	@.move
+end

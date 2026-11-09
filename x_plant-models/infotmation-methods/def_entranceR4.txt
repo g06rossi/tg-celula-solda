@@ -1,0 +1,6 @@
+-- //==========// ENTRADA R4 //==========//
+
+-- Soma um ponto de solda do robo R3
+int_pontoR4 := int_pontoR4 + 1
+-- Considera tempo de solda
+?.startPause(float_tempoSolda)

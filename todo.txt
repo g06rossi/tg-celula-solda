@@ -80,10 +80,14 @@ FASE 0 - SANEAR O MODELO BASE
     [x] def_entranceR2..4 / def_exitR2..4 iguais aos do R1 (o R2 tem a 10ª solda do sedan) (2026-11-09)
     [x] Sem RobotStudio. Modelo cinemático com dados ABB (1,6 m/s, 24 m/s², PSt 0,17 s; spec rev. N 1.5.5/1.8.2) (2026-11-09)
     [x] scripts/gerar_tt.py: cenários K1/K2/K3 (cinemáticos), H (K2 + 0,73 s/trecho, calibrado em 3,3 s/ponto) e regra de Cho (2026-11-09)
-    [ ] Usuário aprovar o cenário central (proposta: H) e a faixa de sensibilidade (K1 a regra de Cho)
-    [ ] Gerar as 8 TT do cenário escolhido e colar no Plant (v5)
+    [x] Cenário H aprovado como central; sensibilidade K1 a regra de Cho (2026-11-11)
+    [x] 8 TT do cenário H + memoria_calculo_H.csv + LEIAME.md em x_plant-models/tt_cenario_H/ (c = 0,7287 s) (2026-11-11)
+    [x] coleta_plant.py: parâmetros do modelo de TT (v, a, PSt, c) no lugar das V calibradas da IC (2026-11-11)
+    [ ] v5 no Plant: colar as 8 TT, colar o coleta_plant.py, rodar 2x (cenário v5)
+    [ ] Validar a v5: 436 carrocerias; ~100,50 kWh (0,2305 kWh/carroceria); robôs ~77% ociosos
     [x] Takt de 132 s já imposto no ENTRADA_BIY (Interval Const 2:12) (2026-11-09)
-    [ ] Comparar a versão com V realista contra a v4: mesmo throughput, ociosidade visível -> 1º resultado do TCC
+    [ ] Comparar a v5 contra a v4: mesmo throughput, ociosidade visível -> 1º resultado do TCC
+    [ ] Rodadas de sensibilidade com as TT de K1 e da regra de Cho (gerar_tt.py K1 / regra a implementar)
 
 [x] [M] 3. Potências por estado com fonte (2026-11-09)
     [x] Unidade (kWh) e potências da IC levantadas no relatório final (2026-11-09)

@@ -162,14 +162,37 @@ def gravar(cen, pasta):
     else:
         v, a, pst, _ = CENARIOS[cen]
     os.makedirs(pasta, exist_ok=True)
+    det = ["robo;produto;de;para;origem_d;d_m;regime;d_v_s;v_a_s;2raiz_d_a_s;PSt_s;sobrecusto_c_s;t_final_s;t_IC_s"]
     for mod in ("Hatch", "Sedan"):
         for r in range(1, 5):
-            M, _ = matriz(tc, tt, r, mod, v, a, pst, c)
+            M, d_home = matriz(tc, tt, r, mod, v, a, pst, c)
             arq = os.path.join(pasta, "TT_R%d_%s_%s.txt" % (r, mod.upper(), cen))
             with open(arq, "w", encoding="utf-8", newline="\r\n") as f:
                 for lin in M:
                     f.write("\t".join("%.4f" % x for x in lin) + "\n")
             print("gravado:", arq)
+            # memória de cálculo dos trechos usados na sequência home->P1->...->P10->home
+            P, T = tc[(r, mod)], tt[(r, mod)]
+            for i, j in [(0, 1)] + [(k, k + 1) for k in range(1, 10)] + [(10, 0)]:
+                if 0 in (i, j):
+                    d = d_home[j or i]; orig = "IC t/(s/m)=%.2f/%.2f" % (T[0][j or i], s_por_m(tc, tt, r, mod))
+                else:
+                    d = math.dist(P[i], P[j]); orig = "reta TC"
+                if d <= 1e-9:
+                    reg, dv, va, tri, ps, cc = "parado", 0, 0, 0, 0, 0
+                elif d >= v * v / a:
+                    reg, dv, va, tri, ps, cc = "trapezio", d / v, v / a, 0, pst, c
+                else:
+                    reg, dv, va, tri, ps, cc = "triangulo", 0, 0, 2 * math.sqrt(d / a), pst, c
+                t_ic = T[0][j or i] if 0 in (i, j) else T[i][j]
+                nome = lambda k: "P0" if k == 0 else "P%d" % k
+                det.append(";".join(["R%d" % r, mod.upper(), nome(i), nome(j), orig] +
+                                    ["%.4f" % x for x in (d,)] + [reg] +
+                                    ["%.4f" % x for x in (dv, va, tri, ps, cc, M[i][j], t_ic)]).replace(".", ","))
+    arq = os.path.join(pasta, "memoria_calculo_%s.csv" % cen)
+    with open(arq, "w", encoding="utf-8-sig", newline="\r\n") as f:
+        f.write("\n".join(det) + "\n")
+    print("gravado:", arq, "| c = %.4f s" % c)
 
 
 if __name__ == "__main__":

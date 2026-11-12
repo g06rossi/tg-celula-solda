@@ -102,15 +102,17 @@ FASE 0 - SANEAR O MODELO BASE
     [ ] Tempo/energia de retomada: sem fonte A -> parâmetro de sensibilidade (0,2-2 s) -> Fase 1 (TransitionTimeOffToOperational)
     [x] Solda mantida no Standby (4,59 kW, o wait não serve); economia vai para o Off (0,17 kW); PARAMETROS atualizado (2026-11-09)
 
-[~] [M] 4. Variabilidade: mix aleatório (ListaBIW), tempos com distribuição, 5-10 réplicas <- AGORA
+[~] [M] 4. Variabilidade: mix aleatório (feito, v7), tempos com distribuição (Fase 1), 10 réplicas (feito)
     [x] Mix: o Source sorteia cada carroceria pela proporção da ListaBIW (Percentage), confirmado pelo usuário (2026-11-12)
     [x] listar_attrs: EventController.RandomNumbersVariant / IncrementRandomNumbersVariantOnReset; ENTRADA_BIY.RandomSeed (2026-11-12)
     [x] coleta_plant.py grava variante_aleatoria e mix estimado (sedans = (Standby R2 - Standby R1)/1,6 s, ±1); relatório com coluna Sedans (2026-11-12)
     [x] EndSim troca a variante por réplica; 10 réplicas da v6 rodadas (variantes 1..10 gravadas) (2026-11-12)
     [x] Resultado: as 10 réplicas são IDÊNTICAS (100,532 kWh, 278/158 estimado, 436). A variante não muda nada (2026-11-12)
-    [ ] Investigar: o MU selection = Percentage é determinístico? (F1 no campo / lista de opções do dropdown)
-    [ ] Se for: usar o modo aleatório do Source (ex.: Random) ou sortear no código; a variante deve passar a mudar o mix
-[ ] [M] 5. KPIs: kWh/carroceria (principal), throughput, ociosidade, tempo por estado
+    [x] MU selection tem Constant/Sequence Cyclical/Sequence/Random/Percentage/Order Controlled; Percentage = proporção fixa (2026-11-12)
+    [x] v7 = v6 + MU selection Random: 10 réplicas com mix sorteado (sedans 144-166, média 154,9 ± 5,4), 436 fixo,
+        100,52 ± 0,02 kWh, 0,2306 kWh/carroceria. NOVA BASELINE (estocástica) (2026-11-12)
+    [ ] Tempos com distribuição: sem fonte por enquanto -> fica para a Fase 1, junto com as falhas (MTBF/MTTR)
+[x] [M] 5. KPIs: kWh/carroceria, throughput, ociosidade, tempo por estado e sedans no relatório, com IC 95% (2026-11-12)
 [ ] [D] 5b. Pico de potência (hoje 360 kW, só na SEDAN)
 
 ================================================================================

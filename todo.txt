@@ -125,9 +125,11 @@ PROTÓTIPO DE RL (antecipado: maior risco técnico)
 FASE 1 - PILARES DA INDÚSTRIA 5.0
 ================================================================================
 [~] [M] 6. Standby com custo de retomada + baseline com timeout fixo
-    [ ] Teste do mecanismo (só R1, cópia da v7): EnergyTargetState := "Off" quando todos voltam ao home e
-        := "Operational" quando chega a carroceria (def_inPosition). Cenários teste_off_t0 e teste_off_t2
-        (TransitionTimeOffToOperational = 0 e 2 s), variante 1, comparar com v7_r01
+    [x] Mecanismo validado (só R1): EnergyTargetState := "Off"/"Operational" funciona por código. t0: R1 12,24 h em Off,
+        -8,20 kWh (R1 23,26 -> 15,06; célula -8,2%); t2: 435 retomadas de 2 s, custo de só 0,06 kWh; throughput 436 nos dois (2026-11-12)
+    [ ] DECISÃO DE PESQUISA: com chegadas a cada 132 s exatos e ~100 s de folga, "dormir sempre e acordar na chegada"
+        é ótimo e o RL fica trivial. Definir o que torna a decisão difícil (ver CLAUDE.md seção 9) e conversar com o orientador
+    [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)
 [ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda
 [ ] [D] 7b. Modo degradado
 [ ] [M] 8. Operador (Worker/WorkerPool/Broker/FootPath): troca das capas a cada N soldas, atendimento de falhas

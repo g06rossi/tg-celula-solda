@@ -101,6 +101,7 @@ def kpis(ep):
         "trabalho_medio": statistics.mean(trabalhando) if trabalhando else None,
         "standby_medio": statistics.mean(standby) if standby else None,
         "horas": sim / 3600,
+        "sedans": (ep.get("mix") or {}).get("sedan"),
     }
 
 
@@ -251,12 +252,12 @@ def gerar(pasta):
             return f"{fmt(m * f, casas)} ± {fmt(ic * f, casas)}" + ("%" if pct else "")
         linhas.append([html.escape(c), len(lst), mi("energia_por_carroceria", 3), mi("throughput", 1),
                        mi("energia_total", 1), mi("ociosidade_media", 1, True), mi("trabalho_medio", 1, True),
-                       mi("standby_medio", 1, True)])
+                       mi("standby_medio", 1, True), mi("sedans", 1)])
     partes.append("<h2>Comparação entre cenários</h2>")
     ep0 = eps[0]
     partes.append(tabela(["Cenário", "Replicações", "Energia / carroceria", "Carrocerias", "Energia total",
                           "Robôs: " + nome(ep0, "Operational"), "Robôs: " + nome(ep0, "Working"),
-                          "Robôs: " + nome(ep0, "Standby")], linhas))
+                          "Robôs: " + nome(ep0, "Standby"), "Sedans"], linhas))
     if len(grupos) > 1:
         partes.append(emb(fig_comparacao(grupos)))
 

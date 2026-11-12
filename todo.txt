@@ -104,8 +104,11 @@ FASE 0 - SANEAR O MODELO BASE
 
 [~] [M] 4. Variabilidade: mix aleatório (ListaBIW), tempos com distribuição, 5-10 réplicas <- AGORA
     [x] Mix: o Source sorteia cada carroceria pela proporção da ListaBIW (Percentage), confirmado pelo usuário (2026-11-12)
-    [ ] Descobrir como trocar a semente/variante aleatória por réplica (listar_attrs no EventController e no ENTRADA_BIY)
-    [ ] Réplicas com sementes diferentes: o mix deve variar (hoje 279/157 em todas as rodadas)
+    [x] listar_attrs: EventController.RandomNumbersVariant / IncrementRandomNumbersVariantOnReset; ENTRADA_BIY.RandomSeed (2026-11-12)
+    [x] coleta_plant.py grava variante_aleatoria e mix estimado (sedans = (Standby R2 - Standby R1)/1,6 s, ±1); relatório com coluna Sedans (2026-11-12)
+    [ ] Ler os valores atuais de RandomNumbersVariant, IncrementRandomNumbersVariantOnReset e RandomSeed
+    [ ] EndSim: após incrementar int_replica, fazer EventController.RandomNumbersVariant := int_replica
+    [ ] Rodar 10 réplicas da v6 (cenário v6_rep): variante 1..10 no JSON, mix variando, throughput 436
 [ ] [M] 5. KPIs: kWh/carroceria (principal), throughput, ociosidade, tempo por estado
 [ ] [D] 5b. Pico de potência (hoje 360 kW, só na SEDAN)
 

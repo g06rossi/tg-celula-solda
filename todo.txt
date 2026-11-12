@@ -88,8 +88,7 @@ FASE 0 - SANEAR O MODELO BASE
     [x] Achado: o skid anda VAZIO 56% do tempo (Working 12,2 h; +19,8 kWh) -> total 120,28 em vez de 100,50 (2026-11-12)
     [x] v6 = v5 + "Automatic stop" no SKID_EFQ_3: skid 7,16 kWh (Working 20,3%), total 100,532 kWh = 0,2306 kWh/carroceria,
         436 carrocerias, robôs idênticos à v5. Previsão batida. NOVA BASELINE (2026-11-12)
-    [ ] v5_r01.json foi sobrescrito por uma rodada com Automatic stop: restaurar a partir de _testes/v5_r01_original_do_commit.json
-    [ ] Conferir se o celula-de-solda-tg-v5.spp ficou com Automatic stop marcado (foi salvo às 12:01); se sim, desmarcar e salvar
+    [x] v5_r01.json e celula-de-solda-tg-v5.spp restaurados do commit (estavam com Automatic stop) (2026-11-12)
     [x] Takt de 132 s já imposto no ENTRADA_BIY (Interval Const 2:12) (2026-11-09)
     [x] 1º resultado do TCC: mesmo throughput (436), robôs 24-37% -> ~77% ociosos; 0,355 -> 0,2306 kWh/carroceria (2026-11-12)
     [ ] Rodadas de sensibilidade com as TT de K1 e da regra de Cho (gerar_tt.py K1 / regra a implementar)
@@ -103,8 +102,10 @@ FASE 0 - SANEAR O MODELO BASE
     [ ] Tempo/energia de retomada: sem fonte A -> parâmetro de sensibilidade (0,2-2 s) -> Fase 1 (TransitionTimeOffToOperational)
     [x] Solda mantida no Standby (4,59 kW, o wait não serve); economia vai para o Off (0,17 kW); PARAMETROS atualizado (2026-11-09)
 
-[ ] [M] 4. Variabilidade: mix aleatório (ListaBIW), tempos com distribuição, 5-10 réplicas
-    [ ] Confirmar se o MU selection = Percentage sorteia (mudar a semente e ver se o mix muda)
+[~] [M] 4. Variabilidade: mix aleatório (ListaBIW), tempos com distribuição, 5-10 réplicas <- AGORA
+    [x] Mix: o Source sorteia cada carroceria pela proporção da ListaBIW (Percentage), confirmado pelo usuário (2026-11-12)
+    [ ] Descobrir como trocar a semente/variante aleatória por réplica (listar_attrs no EventController e no ENTRADA_BIY)
+    [ ] Réplicas com sementes diferentes: o mix deve variar (hoje 279/157 em todas as rodadas)
 [ ] [M] 5. KPIs: kWh/carroceria (principal), throughput, ociosidade, tempo por estado
 [ ] [D] 5b. Pico de potência (hoje 360 kW, só na SEDAN)
 

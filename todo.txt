@@ -74,7 +74,7 @@ FASE 0 - SANEAR O MODELO BASE
     [x] v4 validada: tempos idênticos à v3 (dif 0,000 s), 436 carrocerias, 154,717 kWh = previsão; 0,355 kWh/carroceria (2026-11-09)
     [ ] Colar de novo o coleta_plant.py (3 parâmetros novos: velocidade do skid, takt, controlador) na próxima rodada
 
-[~] [M] 2. Separar o tempo do robô do takt <- AGORA
+[x] [M] 2. Separar o tempo do robô do takt (v5/v6, 2026-11-12)
     [x] ENTRADA_BIY: intervalo Const 2:12 (takt já imposto), Percentage com ListaBIW. SKID: 8,05 m a 0,3 m/s = 26,83 s (2026-11-09)
     [x] Velocidade do skid 0,3 m/s: datasheet Expert-Tünkers EFQ, segundo o autor (conferir a página ao citar) (2026-11-09)
     [x] def_entranceR2..4 / def_exitR2..4 iguais aos do R1 (o R2 tem a 10ª solda do sedan) (2026-11-09)
@@ -86,9 +86,12 @@ FASE 0 - SANEAR O MODELO BASE
     [x] v5 no Plant: 8 TT coladas, coleta colada, rodado 2x (cenário v5) (2026-11-12)
     [x] Robôs da v5 = previsão (R1 23,28 / R2 23,69 / R3 23,10 / R4 23,30 kWh; 76,5-78,0% ociosos); 436 carrocerias (2026-11-12)
     [x] Achado: o skid anda VAZIO 56% do tempo (Working 12,2 h; +19,8 kWh) -> total 120,28 em vez de 100,50 (2026-11-12)
-    [ ] v6 = v5 + "Automatic stop" no SKID_EFQ_3 (cenário v6): esperado skid ~7,2 kWh, total ~100,5 kWh, 436 carrocerias
+    [x] v6 = v5 + "Automatic stop" no SKID_EFQ_3: skid 7,16 kWh (Working 20,3%), total 100,532 kWh = 0,2306 kWh/carroceria,
+        436 carrocerias, robôs idênticos à v5. Previsão batida. NOVA BASELINE (2026-11-12)
+    [ ] v5_r01.json foi sobrescrito por uma rodada com Automatic stop: restaurar a partir de _testes/v5_r01_original_do_commit.json
+    [ ] Conferir se o celula-de-solda-tg-v5.spp ficou com Automatic stop marcado (foi salvo às 12:01); se sim, desmarcar e salvar
     [x] Takt de 132 s já imposto no ENTRADA_BIY (Interval Const 2:12) (2026-11-09)
-    [ ] Comparar a v5 contra a v4: mesmo throughput, ociosidade visível -> 1º resultado do TCC
+    [x] 1º resultado do TCC: mesmo throughput (436), robôs 24-37% -> ~77% ociosos; 0,355 -> 0,2306 kWh/carroceria (2026-11-12)
     [ ] Rodadas de sensibilidade com as TT de K1 e da regra de Cho (gerar_tt.py K1 / regra a implementar)
 
 [x] [M] 3. Potências por estado com fonte (2026-11-09)

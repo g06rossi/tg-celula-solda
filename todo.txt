@@ -106,9 +106,10 @@ FASE 0 - SANEAR O MODELO BASE
     [x] Mix: o Source sorteia cada carroceria pela proporção da ListaBIW (Percentage), confirmado pelo usuário (2026-11-12)
     [x] listar_attrs: EventController.RandomNumbersVariant / IncrementRandomNumbersVariantOnReset; ENTRADA_BIY.RandomSeed (2026-11-12)
     [x] coleta_plant.py grava variante_aleatoria e mix estimado (sedans = (Standby R2 - Standby R1)/1,6 s, ±1); relatório com coluna Sedans (2026-11-12)
-    [ ] Ler os valores atuais de RandomNumbersVariant, IncrementRandomNumbersVariantOnReset e RandomSeed
-    [ ] EndSim: após incrementar int_replica, fazer EventController.RandomNumbersVariant := int_replica
-    [ ] Rodar 10 réplicas da v6 (cenário v6_rep): variante 1..10 no JSON, mix variando, throughput 436
+    [x] EndSim troca a variante por réplica; 10 réplicas da v6 rodadas (variantes 1..10 gravadas) (2026-11-12)
+    [x] Resultado: as 10 réplicas são IDÊNTICAS (100,532 kWh, 278/158 estimado, 436). A variante não muda nada (2026-11-12)
+    [ ] Investigar: o MU selection = Percentage é determinístico? (F1 no campo / lista de opções do dropdown)
+    [ ] Se for: usar o modo aleatório do Source (ex.: Random) ou sortear no código; a variante deve passar a mudar o mix
 [ ] [M] 5. KPIs: kWh/carroceria (principal), throughput, ociosidade, tempo por estado
 [ ] [D] 5b. Pico de potência (hoje 360 kW, só na SEDAN)
 

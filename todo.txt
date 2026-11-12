@@ -124,7 +124,10 @@ PROTÓTIPO DE RL (antecipado: maior risco técnico)
 ================================================================================
 FASE 1 - PILARES DA INDÚSTRIA 5.0
 ================================================================================
-[ ] [M] 6. Standby com custo de retomada + baseline com timeout fixo
+[~] [M] 6. Standby com custo de retomada + baseline com timeout fixo
+    [ ] Teste do mecanismo (só R1, cópia da v7): EnergyTargetState := "Off" quando todos voltam ao home e
+        := "Operational" quando chega a carroceria (def_inPosition). Cenários teste_off_t0 e teste_off_t2
+        (TransitionTimeOffToOperational = 0 e 2 s), variante 1, comparar com v7_r01
 [ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda
 [ ] [D] 7b. Modo degradado
 [ ] [M] 8. Operador (Worker/WorkerPool/Broker/FootPath): troca das capas a cada N soldas, atendimento de falhas

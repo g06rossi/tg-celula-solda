@@ -19,6 +19,12 @@ RECURSOS = ["ABB_IRB_6700_1", "ABB_IRB_6700_2", "ABB_IRB_6700_3",
 SAIDA = "SAIDA_BIY"            # Drain que conta as carrocerias prontas
 UNIDADE_ENERGIA = "kWh"        # confira na aba de energia dos robôs
 
+# Energia do arco de solda somada FORA do Plant (opção B): quando a pausa da solda vai para o
+# estado Operational (EnergyPauseStartState = "Operational"), o Plant só cobra 0,84 kW do robô
+# parado; a energia do arco (6 kJ por ponto) é somada aqui. Soldas = tempo em Pausing / tempo de solda.
+SOLDA_NO_PYTHON = False         # True a partir da v8 (solda no Operational)
+E_ARCO_KJ = 6.0                 # Li et al. (SMWC 2004), faixa 5-11 kJ
+
 # Parâmetros documentados no relatório (rastreabilidade para a banca).
 # Atualize a cada mudança de modelo e cite a fonte.
 # "IC" = Rossi & Silva, relatório final de Iniciação Científica (UFABC, 2025).
@@ -110,13 +116,19 @@ def amostrar():
 
 
 def _resumo_recurso(o):
-    return {
+    r = {
         "energia": {e: _attr(o, "StatEnergy" + e + "Consumption") for e in ESTADOS_ENERGIA},
         "energia_total": _attr(o, "StatEnergyTotalConsumption"),
         "tempo_energia": {e: _attr(o, "StatEnergy" + e + "Time") for e in ESTADOS_ENERGIA},
         "porcao_estado": {e: _attr(o, "Stat" + e + "Portion") for e in ESTADOS_TEMPO},
         "falhas": _attr(o, "StatFailCount"),
     }
+    if o.Name.startswith("ABB"):
+        ts = _attr(current.float_tempoSolda, "Value") or 1.6
+        pausa = (_attr(o, "StatPausingPortion") or 0.0) * _sim_time()
+        r["soldas"] = pausa / ts
+        r["energia_arco"] = r["soldas"] * E_ARCO_KJ / 3600.0 if SOLDA_NO_PYTHON else 0.0
+    return r
 
 
 def fechar_episodio(cenario="base", replica=1):
@@ -132,6 +144,7 @@ def fechar_episodio(cenario="base", replica=1):
         "throughput": _attr(getattr(current, SAIDA), "StatNumIn"),
         "unidade_energia": UNIDADE_ENERGIA,
         "energia_total_frame": _attr(current, "StatEnergyTotalConsumption"),
+        "solda_no_python": SOLDA_NO_PYTHON,
         "parametros": params,
         "rotulos_estado": ROTULOS_ESTADO,
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},

@@ -35,7 +35,9 @@ Arquivo: `abb_irb6700_product-spec_3HAC044265-001_revN_2019.pdf` (cópia de terc
 
 **Atualização (2026-11-13), modos profundos:** KUKA Roboter, *Controller Option KR C4 PROFINET 2.2* (VW System Software 8.2), 2012, seção 5.6.2.3 (PDF `kuka_krc4_profinet-2.2_2012_profienergy.pdf`, conf. A): *Drive bus OFF* entra em 5 s e volta em **20 s**; *Hibernate* entra em 50 s, fica no mínimo 10 s e volta em **50 s** (padrões configuráveis). Potência em hibernação ~18 W (Yokogawa/KUKA Systems, conf. C). O manual ABB 3HAC050967 ficou inacessível (acesso negado também ao usuário).
 
-**Lacuna:** não há fonte A para o **tempo e a energia de retomada** de um IRC5. Proposta: tratar como parâmetro de **análise de sensibilidade** (Fase 4, item 16), por exemplo de 0,2 a 2 s, com energia de transição desprezível ou igual à potência ociosa vezes o tempo, deixando isso explícito no texto como hipótese.
+**Atualização (2026-11-13), IRC5 da ABB:** ABB. *Technical reference manual – System parameters*, RobotWare 6.16.03 (IRC5), 3HAC050948-001 rev. AD, 2026. PDF em `z_references/abb_irc5_system-parameters_3HAC050948-001_revAD_RW6.16.pdf`: *Max Brake Release Time* padrão **0,15 s** (0–2 s, seção 6.7.11) → retomada do modo freios; *Brake on Time* 0,3 s–3.600.000 s (seção 6.23.8) = timeout nativo para acionar os freios com o robô parado; *Enable Energy Saving* (seção 4.13.4.4) = entrada de sistema para o estado de economia. Sem potências nem tempos dos modos profundos.
+
+**Lacuna:** não há fonte A para o **tempo e a energia de retomada dos modos profundos** de um IRC5 (para o modo freios: 0,15 s, acima). Proposta: tratar como parâmetro de **análise de sensibilidade** (Fase 4, item 16), por exemplo de 0,2 a 2 s, com energia de transição desprezível ou igual à potência ociosa vezes o tempo, deixando isso explícito no texto como hipótese.
 
 ## 3. Energia por ponto de solda a resistência
 

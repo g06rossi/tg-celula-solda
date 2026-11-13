@@ -89,6 +89,7 @@ def kpis(ep):
     robos = [n for n in rec if n.startswith("ABB")]
     sim = ep["sim_time_s"] or 1
     total = ep.get("energia_total_frame") or sum((r["energia_total"] or 0) for r in rec.values())
+    total += sum((r.get("energia_arco") or 0) for r in rec.values())   # arco somado no Python (opção B)
     thr = ep["throughput"] or 0
     ocioso = [((rec[r]["tempo_energia"].get("Operational") or 0) / sim) for r in robos]
     trabalhando = [((rec[r]["tempo_energia"].get("Working") or 0) / sim) for r in robos]

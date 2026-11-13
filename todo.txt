@@ -128,8 +128,13 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] Mecanismo validado (só R1): EnergyTargetState := "Off"/"Operational" funciona por código. t0: R1 12,24 h em Off,
         -8,20 kWh (R1 23,26 -> 15,06; célula -8,2%); t2: 435 retomadas de 2 s, custo de só 0,06 kWh; throughput 436 nos dois (2026-11-12)
     [x] Opções A/B/C detalhadas com referências, implementação, Python e análise: docs/opcoes-A-B-C-economia-RL.md (2026-11-13)
-    [ ] DECIDIR a ordem (sugestão: B -> A -> C) com o orientador
-    [ ] Baixar manualmente o manual ABB PROFIenergy 3HAC050967 (modos e tempos de retomada) para z_references/
+    [x] Ordem aprovada: B -> A -> C (2026-11-13)
+    [x] Manual ABB PROFIenergy inacessível -> substituído pelo KUKA KR C4 PROFINET 2.2 (2012): Drive bus OFF volta 20 s;
+        Hibernate entra 50 s / volta 50 s; hibernação ~18 W (Yokogawa/KUKA, C) (2026-11-13)
+    [ ] OPÇÃO B (agora): testar EnergyPauseStartState := "Operational" (solda no Operational) + energia do arco no Python
+    [ ] OPÇÃO B: Standby = freios 0,17 kW (retomada 0,2-20 s); Off = hibernação ~0,02 kW (50 s / 50 s); validar com a regra fixa
+    [ ] OPÇÃO A: paradas a montante (Failures do ENTRADA_BIY), calibradas pelo perfil do white paper PI 2011
+    [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)
 [ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda
 [ ] [D] 7b. Modo degradado

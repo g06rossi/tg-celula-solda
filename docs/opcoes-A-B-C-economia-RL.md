@@ -51,18 +51,24 @@ Além dos **freios acionados** (0,17 kW, retomada rápida), os controladores ind
 |---|---|---|
 | Bukata, L.; Šůcha, P.; Hanzálek, Z.; Burget, P. *Energy Optimization of Robotic Cells.* IEEE Trans. Industrial Informatics 13 (2017) 92–102. PDF em `z_references/` | Célula real da **Škoda** (solda/colagem, 6 robôs): só **freios** e **bus power-off** são aplicáveis entre ciclos, porque modos mais profundos têm transição longa demais; o bus power-off exige interação com o controlador superior; os modos de economia rendem **2,4% com ciclo de 56 s, 6,8% com 70 s e 12% com 80 s** (quanto mais folga, mais ganho) | A |
 | PI (2011), white paper PROFIenergy (acima) | Comandos padronizados `Start_Pause`/`End_Pause`/`Query_Modes`; o dispositivo informa os modos suportados e seus tempos; a transição para economia é apropriada para paradas ≥ 5 min; um transportador pode precisar de 30 s de desaceleração antes de o robô dormir | A |
-| ABB. *Application manual – PROFIenergy device* (RobotWare 6), 3HAC050967 | Segundo o trecho de busca: modo **freios acionados** para pausas ≥ 20 s, **motores desligados** para pausas ≥ 2 min e **I/O desligado** para pausas ≥ 10 min; "ao entrar num modo de economia, o robô para imediatamente". **O PDF não pôde ser baixado (acesso bloqueado). Baixar manualmente e conferir** | C (até ler o PDF) |
+| **KUKA Roboter GmbH. *Controller Option KR C4 PROFINET 2.2* (KUKA System Software 8.2 / VW System Software 8.2), versão V5, 08/05/2012, seção 5.6.2.3, p. 24–25. PDF em `z_references/`** | **Substitui o manual ABB (inacessível).** Estados PROFIenergy do controlador: *Ready_To_Operate*; ***Drive bus OFF*** (acionamentos desligados): entrar = **5 s**, permanência mínima = 0 s, **voltar a operar = 20 s**; ***Hibernate*** (controlador em repouso, só responde ao Wake-on-LAN): entrar = **50 s**, permanência mínima = **10 s**, **voltar a operar = 50 s** (valores padrão, configuráveis) | A |
+| ABB. *Application manual – PROFIenergy device* (RobotWare 6), 3HAC050967 | Segundo um trecho de busca: freios ≥ 20 s, motores desligados ≥ 2 min, I/O desligado ≥ 10 min. **Acesso negado também ao usuário (2026-11-13): não usar como fonte.** Citar no máximo como "o ABB IRC5 também implementa PROFIenergy" | C |
+| Yokogawa / KUKA Systems (notícia técnica: *Yokogawa's precision power scope helps KUKA Systems minimise the energy consumption of industrial robots*) | Medição com o analisador PX8000: robô parado ~700 W, cai para ~200 W após 20 s parado; em hibernação, ~18 W para controle, inversor e robô | C |
 | ABB. *Product specification IRB 6700*, 3HAC044265-001 rev. N (2019) | Freios acionados = 0,17 kW; freios liberados = 0,84 kW (já em uso) | A |
 
 ### Como implementar no Plant
 O Plant tem só 5 estados de energia (Working, Operational, Standby, Off, Failed), e hoje o **Standby está ocupado pela solda**. Para ter dois modos de economia, é preciso liberar o Standby:
 1. **Solda passa a usar o Operational:** mudar `EnergyPauseStartState` de "Standby" para "Operational" (o atributo existe, conforme o `listar_attrs`). Assim o `startPause` continua segurando o robô 1,6 s, mas a 0,84 kW. A energia do arco (~3,75 kW × 1,6 s = 6 kJ por ponto) passa a ser **somada no Python** pela contagem de soldas, que já sabemos medir (tempo em pausa ÷ 1,6 s). **Precisa de teste:** confirmar que o atributo aceita escrita e que o tempo de pausa continua mensurável.
 2. **Standby = freios acionados** (0,17 kW; Standby→Operational = tempo curto, ex.: 0,2–2 s).
-3. **Off = modo profundo** (motores/barramento desligados; potência e Off→Operational a definir com fonte; da ordem de segundos a dezenas de segundos, segundo Bukata 2017 e o manual ABB).
+3. **Off = hibernação** (controlador em repouso): **Off→Operational = 50 s**, Operational→Off = 50 s e permanência mínima de 10 s (KUKA KR C4, valores padrão); potência **~0,02 kW** (Yokogawa/KUKA, conf. C → análise de sensibilidade).
+   - Interpretação dos modos para o IRB 6700: o "freios acionados" da spec ABB (0,17 kW) corresponde a robô parado com os servos desligados, ou seja, ao *Drive bus OFF* do KUKA. Então **Standby = freios/acionamentos desligados, 0,17 kW (ABB, A), retomada de 0,2–20 s** (20 s = padrão do *Drive bus OFF* KUKA, o pior caso; o limite inferior é o tempo de soltura dos freios). **O tempo real de retomada do IRC5 não tem fonte A**: usar 20 s como cenário conservador e 2 s como otimista, com sensibilidade.
+   - Isso dá um trade-off real: o Standby economiza 0,67 kW e volta em segundos; a hibernação economiza ~0,82 kW, mas exige ~100 s entre entrar e sair (50 + 50), que é quase toda a janela ociosa normal (~100 s). Ou seja, só compensa em paradas longas, e errar custa até 50 s de atraso na linha.
 4. Comando: `EnergyTargetState := "Standby"` / `"Off"` / `"Operational"`, já validado para o Off.
 
 ### Parâmetros que faltam
-Potência do IRC5 com motores desligados e tempo de retomada do modo profundo. **Sem fonte A ainda.** Caminho: obter o manual ABB 3HAC050967 manualmente; senão, hipótese explícita com análise de sensibilidade (é o parâmetro que mais afeta o resultado, então a sensibilidade é obrigatória).
+- **Tempos de transição:** cobertos pelo manual KUKA KR C4 (fonte A, mas de outro fabricante; justificar no texto como "valores padrão de um controlador automotivo que implementa o mesmo perfil PROFIenergy"; o IRC5 da ABB também implementa PROFIenergy).
+- **Potência na hibernação:** só fonte C (~18 W) → sensibilidade (ex.: 0,02–0,10 kW).
+- **Tempo de retomada do Standby no IRC5:** sem fonte A → sensibilidade de 0,2 a 20 s.
 
 ---
 
@@ -134,7 +140,7 @@ Tudo sai do pipeline atual (`coleta_plant.py` → JSON → `gerar_relatorio.py`)
 | | Cria incerteza? | Cria custo de errar? | Fontes | Esforço no Plant |
 |---|---|---|---|---|
 | **A** | sim (paradas a montante) | só com B | boas para o perfil (PI 2011), fracas para os números da célula | baixo (aba Failures do Source) |
-| **B** | não sozinha | sim (retomada lenta) | boas qualitativamente (Bukata 2017, PI 2011); números do ABB a confirmar | médio (liberar o Standby: solda no Operational + energia no Python) |
+| **B** | não sozinha | sim (retomada lenta) | boas: Bukata 2017, PI 2011 e **tempos do KUKA KR C4 (A)**; potência da hibernação só C | médio (liberar o Standby: solda no Operational + energia no Python) |
 | **C** | sim (falhas, operador) | sim, com B | fracas para os números | alto (Failures + Worker/Broker/FootPath) |
 
 **Sugestão:** B → A → C. B é a peça que cria o trade-off e não depende de dados de falha; A aproveita o mesmo mecanismo e tem a melhor fonte de contexto (medições reais da Daimler e da VW); C fecha os pilares de resiliência e foco no humano e é a mais trabalhosa.

@@ -33,6 +33,8 @@ Arquivo: `abb_irb6700_product-spec_3HAC044265-001_revN_2019.pdf` (cópia de terc
 | Parada automática por inatividade | Fanuc: 30 s (padrão); ABB "Brake on time": 120 s (sugerido) | fóruns e bases comerciais | C |
 | KUKA: 700 W parado → 200 W após 20 s | — | artigo comercial (ien.eu) | C |
 
+**Atualização (2026-11-13), modos profundos:** KUKA Roboter, *Controller Option KR C4 PROFINET 2.2* (VW System Software 8.2), 2012, seção 5.6.2.3 (PDF `kuka_krc4_profinet-2.2_2012_profienergy.pdf`, conf. A): *Drive bus OFF* entra em 5 s e volta em **20 s**; *Hibernate* entra em 50 s, fica no mínimo 10 s e volta em **50 s** (padrões configuráveis). Potência em hibernação ~18 W (Yokogawa/KUKA Systems, conf. C). O manual ABB 3HAC050967 ficou inacessível (acesso negado também ao usuário).
+
 **Lacuna:** não há fonte A para o **tempo e a energia de retomada** de um IRC5. Proposta: tratar como parâmetro de **análise de sensibilidade** (Fase 4, item 16), por exemplo de 0,2 a 2 s, com energia de transição desprezível ou igual à potência ociosa vezes o tempo, deixando isso explícito no texto como hipótese.
 
 ## 3. Energia por ponto de solda a resistência

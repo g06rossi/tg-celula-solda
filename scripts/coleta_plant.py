@@ -119,19 +119,6 @@ def _resumo_recurso(o):
     }
 
 
-def _mix_estimado():
-    """Sedans = soldas extras do R2 (10ª solda só no sedan): (Standby R2 - Standby R1) / tempo de solda."""
-    try:
-        ts = _attr(current.float_tempoSolda, "Value") or 1.6
-        st1 = _attr(current.ABB_IRB_6700_1, "StatEnergyStandbyTime") or 0.0
-        st2 = _attr(current.ABB_IRB_6700_2, "StatEnergyStandbyTime") or 0.0
-        n = _attr(getattr(current, SAIDA), "StatNumIn") or 0.0
-        ns = int(round((st2 - st1) / ts))
-        return {"sedan": ns, "hatch": int(n) - ns, "metodo": "(Standby R2 - Standby R1) / tempo de solda"}
-    except Exception as e:
-        return {"erro": str(e)}
-
-
 def fechar_episodio(cenario="base", replica=1):
     amostrar()  # garante o último ponto da série
     params = {k: dict(v) for k, v in PARAMETROS.items()}
@@ -147,8 +134,6 @@ def fechar_episodio(cenario="base", replica=1):
         "energia_total_frame": _attr(current, "StatEnergyTotalConsumption"),
         "parametros": params,
         "rotulos_estado": ROTULOS_ESTADO,
-        "variante_aleatoria": _attr(current.EventController, "RandomNumbersVariant"),
-        "mix": _mix_estimado(),
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},
         "serie": _serie,
     }

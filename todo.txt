@@ -137,12 +137,16 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         transições cobradas como Operational (0,84 kW); throughput 436. MECANISMO DA OPÇÃO B VALIDADO (2026-11-17)
     [x] Achado: com janelas de ~100 s a hibernação PIORA (R1 18,0 kWh contra ~15,1 só com freios). Ponto de equilíbrio
         ~9 min de parada (100 s de transição + 447 s em Off), coerente com a regra de >= 5 min do white paper PI (2026-11-17)
-    [ ] Recolar o coleta_plant.py ATUAL no PythonModule (o do Plant não grava variante nem mix)
+    [x] Regressão achada: o commit a861879 (13/11) apagou _mix_estimado e variante do coleta_plant.py (editor salvou
+        versão antiga). Restaurado + registro de eventos/pausas (evento, _pausas, pausas_s) testado com mock (2026-11-17)
     [x] Fonte ABB para o IRC5: retomada dos freios 0,15 s (Max Brake Release Time); Brake on Time = timeout nativo (2026-11-13)
     [x] coleta_plant.py/gerar_relatorio.py: energia do arco somada no Python (SOLDA_NO_PYTHON) (2026-11-13)
     [x] Desenho final da B: solda = Standby; freios e hibernação = Off, com PowerInputOff/TransitionTime* por código (2026-11-17)
-    [ ] OPÇÃO A (AGORA): paradas a montante (Failures do ENTRADA_BIY), calibradas pelo perfil do white paper PI 2011
-        -> cria pausas longas em que a hibernação compensa e a escolha do modo passa a ter conteúdo
+    [~] OPÇÃO A (AGORA): paradas a montante (Failures do ENTRADA_BIY: Availability + MTTR; Negexp/Erlang automáticos)
+        Calibrar pelos 64% do white paper é inviável (janelas estruturais de ~100 s = ~12 h/turno; com A = 72% só 34%
+        do tempo parado fica em paradas longas) -> white paper como justificativa qualitativa; números por cenário
+    [ ] v9 = v7 + Failures no ENTRADA_BIY (A 85%, MTTR 10 min) + evento() no def_inPosition; 10 réplicas (v9_A85_M10)
+    [ ] Grade de sensibilidade: A 95/85/72% x MTTR 5/10/15 min
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)
 [ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda

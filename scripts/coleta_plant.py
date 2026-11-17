@@ -49,6 +49,7 @@ PARAMETROS = {
     "Potência skid parado - Operational (kW)": {"valor": 0.0, "fonte": "IC, Tab. 11 - hipótese, a revisar"},
     "Velocidade do skid (m/s)": {"valor": 0.3, "fonte": "Expert-Tünkers, datasheet EFQ (2024), segundo o autor; SKID_EFQ_3: 8,05 m -> 26,83 s"},
     "Intervalo entre carrocerias - takt (s)": {"valor": 132, "fonte": "ENTRADA_BIY Interval Const 2:12 = ciclo médio real FMEIB (2025)"},
+    "Paradas a montante (ENTRADA_BIY): disponibilidade / MTTR": {"valor": "ver nome do cenário", "fonte": "Hipótese com sensibilidade (A 95/85/72%, MTTR 5/10/15 min); 72% = Alaka et al. (2025); pausas >= 5 min: white paper PI (2011)"},
     "Controlador do robô": {"valor": "IRC5", "fonte": "Hipótese de projeto (a célula de referência não existe fisicamente); escolhido por ter a spec ABB com potências parado/freios (3HAC044265-001 rev. N)"},
 }
 
@@ -70,6 +71,7 @@ ESTADOS_TEMPO = ["Working", "Waiting", "Blocking", "Fail", "Pausing", "Stopped",
                  "Empty", "PoweringUpDown", "Unplanned"]
 
 _serie = {"t": []}
+_eventos = []   # (tempo_s, nome): "chegada" e "todos_home" vindos do def_inPosition
 
 
 def _num(v):
@@ -96,9 +98,27 @@ def _sim_time():
 
 
 def limpar_episodio():
-    global _serie
+    global _serie, _eventos
     _serie = {"t": []}
+    _eventos = []
     return "ok"
+
+
+def evento(nome):
+    """Registra um evento do ciclo (chamado no def_inPosition). Retorna o nº de eventos."""
+    _eventos.append((_sim_time(), str(nome)))
+    return len(_eventos)
+
+
+def _pausas():
+    """Janelas ociosas da célula: de 'todos_home' até a 'chegada' seguinte (s)."""
+    p, ini = [], None
+    for t, n in _eventos:
+        if n == "todos_home":
+            ini = t
+        elif n == "chegada" and ini is not None:
+            p.append(round(t - ini, 2)); ini = None
+    return p
 
 
 def amostrar():
@@ -132,6 +152,19 @@ def _resumo_recurso(o):
     return r
 
 
+def _mix_estimado():
+    """Sedans = soldas extras do R2 (10ª solda só no sedan): (Standby R2 - Standby R1) / tempo de solda."""
+    try:
+        ts = _attr(current.float_tempoSolda, "Value") or 1.6
+        st1 = _attr(current.ABB_IRB_6700_1, "StatEnergyStandbyTime") or 0.0
+        st2 = _attr(current.ABB_IRB_6700_2, "StatEnergyStandbyTime") or 0.0
+        n = _attr(getattr(current, SAIDA), "StatNumIn") or 0.0
+        ns = int(round((st2 - st1) / ts))
+        return {"sedan": ns, "hatch": int(n) - ns, "metodo": "(Standby R2 - Standby R1) / tempo de solda"}
+    except Exception as e:
+        return {"erro": str(e)}
+
+
 def fechar_episodio(cenario="base", replica=1):
     amostrar()  # garante o último ponto da série
     params = {k: dict(v) for k, v in PARAMETROS.items()}
@@ -148,6 +181,9 @@ def fechar_episodio(cenario="base", replica=1):
         "solda_no_python": SOLDA_NO_PYTHON,
         "parametros": params,
         "rotulos_estado": ROTULOS_ESTADO,
+        "variante_aleatoria": _attr(current.EventController, "RandomNumbersVariant"),
+        "mix": _mix_estimado(),
+        "pausas_s": _pausas(),
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},
         "serie": _serie,
     }

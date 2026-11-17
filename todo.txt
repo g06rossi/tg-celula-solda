@@ -132,12 +132,17 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] Manual ABB PROFIenergy inacessível -> substituído pelo KUKA KR C4 PROFINET 2.2 (2012): Drive bus OFF volta 20 s;
         Hibernate entra 50 s / volta 50 s; hibernação ~18 W (Yokogawa/KUKA, C) (2026-11-13)
     [x] EnergyPauseStartState := "Operational" -> "Value is out of allowed range": a solda continua no Standby (2026-11-17)
-    [ ] OPÇÃO B (agora): teste_modos (R1): trocar PowerInputOff e TransitionTime* por código antes de cada Off
-        (hatch -> freios 0,17 kW / 0 / 0,15 s; sedan -> hibernação 0,02 kW / 50 / 50 s); ver se a energia é integrada por trecho
+    [x] teste_modos (R1, variantes 3 e 2): PowerInputOff e TransitionTime* aceitam escrita por código; energia do Off
+        integrada por trecho (0,153 kW efetivo); PoweringUpDown = exatamente sedans x 100 s + hatches x 0,15 s;
+        transições cobradas como Operational (0,84 kW); throughput 436. MECANISMO DA OPÇÃO B VALIDADO (2026-11-17)
+    [x] Achado: com janelas de ~100 s a hibernação PIORA (R1 18,0 kWh contra ~15,1 só com freios). Ponto de equilíbrio
+        ~9 min de parada (100 s de transição + 447 s em Off), coerente com a regra de >= 5 min do white paper PI (2026-11-17)
+    [ ] Recolar o coleta_plant.py ATUAL no PythonModule (o do Plant não grava variante nem mix)
     [x] Fonte ABB para o IRC5: retomada dos freios 0,15 s (Max Brake Release Time); Brake on Time = timeout nativo (2026-11-13)
     [x] coleta_plant.py/gerar_relatorio.py: energia do arco somada no Python (SOLDA_NO_PYTHON) (2026-11-13)
-    [ ] OPÇÃO B: Standby = freios 0,17 kW (retomada 0,15 s; sens. até 20 s); Off = hibernação ~0,02 kW (50 s / 50 s); validar com a regra fixa
-    [ ] OPÇÃO A: paradas a montante (Failures do ENTRADA_BIY), calibradas pelo perfil do white paper PI 2011
+    [x] Desenho final da B: solda = Standby; freios e hibernação = Off, com PowerInputOff/TransitionTime* por código (2026-11-17)
+    [ ] OPÇÃO A (AGORA): paradas a montante (Failures do ENTRADA_BIY), calibradas pelo perfil do white paper PI 2011
+        -> cria pausas longas em que a hibernação compensa e a escolha do modo passa a ter conteúdo
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)
 [ ] [M] 7. Falhas (MTBF/MTTR com fonte) e variação de mix e demanda

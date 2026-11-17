@@ -22,7 +22,7 @@ UNIDADE_ENERGIA = "kWh"        # confira na aba de energia dos robôs
 # Energia do arco de solda somada FORA do Plant (opção B): quando a pausa da solda vai para o
 # estado Operational (EnergyPauseStartState = "Operational"), o Plant só cobra 0,84 kW do robô
 # parado; a energia do arco (6 kJ por ponto) é somada aqui. Soldas = tempo em Pausing / tempo de solda.
-SOLDA_NO_PYTHON = True          # v8+: solda no Operational (EnergyPauseStartState) e arco somado aqui
+SOLDA_NO_PYTHON = False         # False: EnergyPauseStartState não aceita "Operational" (2026-11-17); solda segue no Standby
 E_ARCO_KJ = 6.0                 # Li et al. (SMWC 2004), faixa 5-11 kJ
 
 # Parâmetros documentados no relatório (rastreabilidade para a banca).
@@ -42,11 +42,9 @@ PARAMETROS = {
     "Potência robô em movimento - Working (kW)": {"valor": 2.6, "fonte": "ABB 3HAC044265-001 rev. N (2019) p.15: ISO cube, vel. e carga máx., IRB 6700-205/2.80 (IRC5); superestima movimento lento"},
     "Potência robô parado, freios liberados - Operational (kW)": {"valor": 0.84, "fonte": "ABB 3HAC044265-001 rev. N (2019) p.15: brakes disengaged, 205/2.80"},
     "Energia por ponto de solda (kJ)": {"valor": 6.0, "fonte": "Li, Feng, Cerjanec, Grzadzinski, SMWC 2004: 4,7-7,3 kJ primária (MFDC/AC); sensibilidade 5-11 kJ"},
-    "Solda: estado de energia da pausa": {"valor": "Operational (0,84 kW) + arco no Python", "fonte": "EnergyPauseStartState = Operational (v8); arco = soldas x 6 kJ"},
-    "Potência economia, freios acionados - Standby (kW)": {"valor": 0.17, "fonte": "ABB 3HAC044265-001 rev. N (2019) p.15: brakes engaged, 205/2.80"},
-    "Retomada Standby -> Operational (s)": {"valor": 0.15, "fonte": "ABB 3HAC050948-001 rev. AD (RW 6.16), Max Brake Release Time padrão (6.7.11); sensibilidade até 20 s"},
-    "Potência hibernação - Off (kW)": {"valor": 0.02, "fonte": "Yokogawa/KUKA Systems (~18 W, conf. C); sensibilidade 0,02-0,10"},
-    "Entrada Operational -> Off / retomada Off -> Operational (s)": {"valor": "50 / 50", "fonte": "KUKA KR C4 PROFINET 2.2 (2012), Hibernate, padrões (5.6.2.3)"},
+    "Potência soldando - Standby (kW)": {"valor": 4.59, "fonte": "0,84 (robô parado) + 6 kJ / 1,6 s (ciclo da pinça); GWT C9 = 90 kVA S50 é só limite de pico"},
+    "Modo freios (Off): potência / retomada": {"valor": "0,17 kW / 0,15 s", "fonte": "ABB 3HAC044265-001 rev. N p.15 (brakes engaged); ABB 3HAC050948-001 rev. AD, Max Brake Release Time (6.7.11)"},
+    "Modo hibernação (Off): potência / entrada / retomada": {"valor": "0,02 kW / 50 s / 50 s", "fonte": "Yokogawa/KUKA (~18 W, conf. C); KUKA KR C4 PROFINET 2.2 (2012), Hibernate (5.6.2.3)"},
     "Potência skid em movimento - Working (kW)": {"valor": 2.2, "fonte": "Expert-Tünkers, datasheet EFQ 1 (2024); IC, Tab. 11"},
     "Potência skid parado - Operational (kW)": {"valor": 0.0, "fonte": "IC, Tab. 11 - hipótese, a revisar"},
     "Velocidade do skid (m/s)": {"valor": 0.3, "fonte": "Expert-Tünkers, datasheet EFQ (2024), segundo o autor; SKID_EFQ_3: 8,05 m -> 26,83 s"},
@@ -55,14 +53,15 @@ PARAMETROS = {
 }
 
 # Como cada estado de energia do Plant é usado NESTE modelo (vai para o JSON e o relatório).
-# v8+: a solda (startPause) vai para Operational (EnergyPauseStartState) e o arco é somado no Python.
-# Isso libera Standby = freios acionados e Off = hibernação (opção B).
+# A solda (startPause) fica no Standby: EnergyPauseStartState não aceita "Operational" (2026-11-17).
+# Os dois modos de economia (freios e hibernação) usam o Off; o código troca PowerInputOff e os
+# TransitionTime* antes de cada EnergyTargetState := "Off" (opção B, a validar).
 ROTULOS_ESTADO = {
     "Working": "Em movimento (Working)",
-    "Operational": "Parado ou soldando (Operational)",
+    "Operational": "Ocioso/parado (Operational)",
     "Setup": "Setup",
-    "Standby": "Economia - freios acionados (Standby)",
-    "Off": "Hibernação (Off)",
+    "Standby": "Soldando (Standby)",
+    "Off": "Economia: freios ou hibernação (Off)",
     "Fail": "Falha (Fail)",
 }
 

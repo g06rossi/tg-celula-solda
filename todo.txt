@@ -154,8 +154,12 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         robôs 80,7% ociosos. (A 1ª rodada, com 330,5, estava com outra configuração; provável falha do Source ainda ativa) (2026-11-17)
     [x] Controle v10_A100 (falha desativada): 435 carrocerias, 0,2307 kWh/carroceria = v7; a estação em série não atrapalha (2026-11-17)
     [x] scripts/politicas.py (nenhuma / freios / timeout) + ganchos na coleta (evento, tick, info no JSON); testado com mock (2026-11-17)
-    [ ] v11 = v10 + Variables str_politica/float_tau + Generator de 10 s (tick) + politicas.py colado;
-        10 réplicas de cada: v11_nenhuma (= v10?), v11_freios (previsão ~0,160 kWh/carroceria, -36%), v11_timeout300
+    [x] v11 (10 réplicas cada, variantes 1-10, comparação pareada): o Python escreve os atributos dos robôs sem erro;
+        nenhuma = v10 (idêntica); freios 0,1598 ± 0,0008 kWh/carroceria (-36,5%, = previsão), throughput igual;
+        timeout300 = freios (+0,0002 ± 0,0003, não significativo; 8-16 hibernações/turno) (2026-11-17)
+    [x] Limite com informação perfeita (oráculo) da hibernação sobre freios: só 1,04% ± 0,25% da energia (máx. 1,76%);
+        pausa de equilíbrio 8,3 min. O RL não tem margem relevante só com os modos de economia (2026-11-17)
+    [ ] DECISÃO DE PESQUISA (com o orientador): onde está a decisão difícil para o RL? (ver CLAUDE.md seção 9)
     [ ] Grade de sensibilidade: A 95/85/72% x MTTR 5/10/15 min
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)

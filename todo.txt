@@ -148,7 +148,7 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] v9 = v7 + Failures no ENTRADA_BIY (A 85%, MTTR 10 min) + evento(): 10 réplicas, 107 paradas >= 5 min (média 11,7 min,
         máx. 38 min), MAS throughput 436 em todas: o Source "recupera" a produção perdida em rajada (chegadas a cada ~9 s
         depois de cada parada). ARTEFATO: esconde a perda de produção e encurta as janelas seguintes (2026-11-17)
-    [ ] v10 = v9 com a falha numa ESTAÇÃO ANTERIOR (SingleProc, processamento 2:12) entre ENTRADA_BIY e SKID_EFQ_3;
+    [ ] v10 = v9 com a falha numa ESTAÇÃO ANTERIOR (Station = antigo SingleProc no 2404, processamento 2:12) entre ENTRADA_BIY e SKID_EFQ_3;
         Failures do ENTRADA_BIY desativadas. Esperado: throughput cai (~370 com A 85%) e sem rajadas
     [ ] Grade de sensibilidade: A 95/85/72% x MTTR 5/10/15 min
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)

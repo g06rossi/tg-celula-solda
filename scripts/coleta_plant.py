@@ -101,12 +101,18 @@ def limpar_episodio():
     global _serie, _eventos
     _serie = {"t": []}
     _eventos = []
+    h = globals().get("_politica_reset")   # politicas.py, se colado
+    if h:
+        h()
     return "ok"
 
 
 def evento(nome):
     """Registra um evento do ciclo (chamado no def_inPosition). Retorna o nº de eventos."""
     _eventos.append((_sim_time(), str(nome)))
+    h = globals().get("_politica_evento")   # politicas.py, se colado
+    if h:
+        h(str(nome))
     return len(_eventos)
 
 
@@ -184,6 +190,7 @@ def fechar_episodio(cenario="base", replica=1):
         "variante_aleatoria": _attr(current.EventController, "RandomNumbersVariant"),
         "mix": _mix_estimado(),
         "pausas_s": _pausas(),
+        "politica": globals()["_politica_info"]() if "_politica_info" in globals() else None,
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},
         "serie": _serie,
     }

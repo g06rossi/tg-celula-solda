@@ -119,7 +119,7 @@ def principal(margem=0.0):
 if __name__ == "__main__":
     margem = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
     res = principal(margem)
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultados", "otimiza_pico_margem%.0f.json" % margem)
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultados", "otimizacao", "otimiza_pico_margem%.0f.json" % margem)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=1)
     print("\nsalvo:", out)

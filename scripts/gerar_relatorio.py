@@ -79,6 +79,8 @@ def carregar(pasta):
     for arq in sorted(glob.glob(os.path.join(pasta, "*.json"))):
         with open(arq, encoding="utf-8") as f:
             d = json.load(f)
+        if "cenario" not in d or "recursos" not in d:   # ignora JSONs que não são episódios
+            continue
         d["_arquivo"] = os.path.basename(arq)
         eps.append(d)
     return eps

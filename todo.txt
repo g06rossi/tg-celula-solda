@@ -167,7 +167,8 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
           -> ~5-6 trocas por turno na célula, 25-60 min de parada: decisão relevante. Viável; falta literatura de
           manutenção oportunista antes de decidir
 [~] CAMINHO 2 (AGORA): pico de potência das soldas
-    [ ] Medir a linha de base: registrar os inícios de solda nos 8 def_entrance/exit e reconstruir a simultaneidade
+    [x] coleta_plant.py: solda(robo) + soldas_simultaneas (k_max, kVA de pico, tempo em cada K), testado com mock (2026-11-18)
+    [ ] v12 = v11 + PythonModule.call("solda", r) nos 8 def_*; política freios; 10 réplicas (v12_K4): medir a linha de base
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

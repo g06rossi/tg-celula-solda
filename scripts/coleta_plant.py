@@ -72,6 +72,8 @@ ESTADOS_TEMPO = ["Working", "Waiting", "Blocking", "Fail", "Pausing", "Stopped",
 
 _serie = {"t": []}
 _eventos = []   # (tempo_s, nome): "chegada" e "todos_home" vindos do def_inPosition
+_soldas = []    # (tempo_s, robo): início de cada solda, vindo dos def_entranceR*/def_exitR* (caminho 2)
+KVA_PINCA = 90.0   # ABB GWT C9, transformador MFDC 90 kVA (S50)
 
 
 def _num(v):
@@ -98,9 +100,10 @@ def _sim_time():
 
 
 def limpar_episodio():
-    global _serie, _eventos
+    global _serie, _eventos, _soldas
     _serie = {"t": []}
     _eventos = []
+    _soldas = []
     h = globals().get("_politica_reset")   # politicas.py, se colado
     if h:
         h()
@@ -114,6 +117,28 @@ def evento(nome):
     if h:
         h(str(nome))
     return len(_eventos)
+
+
+def solda(robo):
+    """Registra o início de uma solda do robô (1..4). Chamado antes do startPause nos def_*."""
+    _soldas.append((_sim_time(), int(robo)))
+    return len(_soldas)
+
+
+def _simultaneidade():
+    """Quantos robôs soldam ao mesmo tempo (cada solda dura float_tempoSolda): tempo em cada nível K."""
+    if not _soldas:
+        return None
+    dur = _attr(current.float_tempoSolda, "Value") or 1.6
+    ev = sorted([(t, 1) for t, _ in _soldas] + [(t + dur, -1) for t, _ in _soldas], key=lambda x: (x[0], x[1]))
+    tempo, k, ult, kmax = {}, 0, None, 0
+    for t, d in ev:
+        if ult is not None and t > ult:
+            tempo[k] = tempo.get(k, 0.0) + (t - ult)
+        k += d; ult = t; kmax = max(kmax, k)
+    return {"n_soldas": len(_soldas), "k_max": kmax, "kva_pico": kmax * KVA_PINCA,
+            "tempo_por_k_s": {str(kk): round(v, 2) for kk, v in sorted(tempo.items())},
+            "por_robo": {str(r): sum(1 for _, x in _soldas if x == r) for r in range(1, 5)}}
 
 
 def _pausas():
@@ -190,6 +215,7 @@ def fechar_episodio(cenario="base", replica=1):
         "variante_aleatoria": _attr(current.EventController, "RandomNumbersVariant"),
         "mix": _mix_estimado(),
         "pausas_s": _pausas(),
+        "soldas_simultaneas": _simultaneidade(),
         "politica": globals()["_politica_info"]() if "_politica_info" in globals() else None,
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},
         "serie": _serie,

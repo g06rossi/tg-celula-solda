@@ -3,6 +3,7 @@
 -- Se nao for o ponto de limpeza, deve aguardar o tempo da solda e somar um ponto
 if int_pontoR2 < 9
 	int_pontoR2 := int_pontoR2 + 1
+	var nS : integer := PythonModule.call("solda", 2)
 	?.startPause(float_tempoSolda)
 	@.move
 
@@ -11,6 +12,7 @@ else
 	int_pontoR2 := 0
 	-- No sedan, o P10 do R2 e um ponto de solda real (10a solda)
 	if str_modeloAtual = "BIY_SEDAN" then
+		var nS2 : integer := PythonModule.call("solda", 2)
 		?.startPause(float_tempoSolda)
 	end
 	@.move

@@ -3,6 +3,7 @@
 -- Se nao for o ponto de limpeza, deve aguardar o tempo da solda e somar um ponto
 if int_pontoR3 < 9
 	int_pontoR3 := int_pontoR3 + 1
+	var nS : integer := PythonModule.call("solda", 3)
 	?.startPause(float_tempoSolda)
 	@.move
 

@@ -94,6 +94,31 @@ def resolver(mod, K, limite_fim=None):
     return res
 
 
+def exportar_plano(K, fim_max, arq=None, tempo=60.0):
+    """Gera o plano (por modelo de carroceria) que o Plant executa na política "plano" (politicas.py):
+    início de cada robô (s após a chegada), início de cada solda e cauda (última solda -> home)."""
+    global TEMPO_LIMITE
+    TEMPO_LIMITE = tempo
+    plano = {"K": K, "fim_max_s": fim_max, "gerado_por": "otimiza_pico.exportar_plano (CP-SAT)", "produtos": {}}
+    for mod in ("Hatch", "Sedan"):
+        seqs = sequencias(mod)
+        b = resolver(mod, K, limite_fim=fim_max)
+        if "fim_s" not in b:
+            raise RuntimeError("%s: %s" % (mod, b["status"]))
+        plano["produtos"][mod] = {
+            "status": b["status"], "fim_s": b["fim_s"], "espera_s": b["espera_s"],
+            "robos": {str(r): {"inicio_s": b["inicio_robos_s"][r], "soldas_s": b["soldas_s"][r],
+                               "d0_s": round(seqs[r]["d0"], 4), "cauda_s": round(seqs[r]["cauda"], 4)}
+                      for r in seqs}}
+        print("%s: fim %.2f s, espera %.2f s [%s], inícios %s" % (mod, b["fim_s"], b["espera_s"], b["status"], b["inicio_robos_s"]))
+    arq = arq or os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultados", "otimizacao",
+                              "plano_K%d_fim%.0f.json" % (K, fim_max))
+    with open(arq, "w", encoding="utf-8") as f:
+        json.dump(plano, f, ensure_ascii=False, indent=1)
+    print("plano salvo:", arq)
+    return plano
+
+
 def principal(margem=0.0):
     saida = {}
     print("Janela por carroceria: %.1f s | margem reservada: %.1f s" % (JANELA, margem))
@@ -117,6 +142,9 @@ def principal(margem=0.0):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "plano":   # otimiza_pico.py plano K fim_max
+        exportar_plano(int(sys.argv[2]), float(sys.argv[3]))
+        sys.exit(0)
     margem = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
     res = principal(margem)
     out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultados", "otimizacao", "otimiza_pico_margem%.0f.json" % margem)

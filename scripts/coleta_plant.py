@@ -146,15 +146,20 @@ def reservar_solda(robo):
     w = _attr(current.float_tempoSolda, "Value") or 1.6
     K = _k_limite()
     _reservas = [(s, e) for s, e in _reservas if e > agora + 1e-9]
-    t = agora
-    for cand in [agora] + sorted(e for s, e in _reservas):
-        if cand < agora:
+    h = globals().get("_politica_planejado")      # politicas.py: instante planejado (política plano)
+    tp = h(robo) if h else None
+    t0 = max(agora, tp) if tp is not None else agora
+    t = t0
+    for cand in [t0] + sorted(e for s, e in _reservas):
+        if cand < t0:
             continue
         n = sum(1 for s, e in _reservas if s < cand + w - 1e-9 and e > cand + 1e-9)
         if n < K:
             t = cand
             break
     _reservas.append((t, t + w))
+    if "_pol" in globals():
+        globals()["_pol"].setdefault("ult_fim", {})[int(robo)] = t + w
     _soldas.append((t, int(robo)))
     _esperas[int(robo)] = _esperas.get(int(robo), 0.0) + (t - agora)
     return round(t - agora, 4)

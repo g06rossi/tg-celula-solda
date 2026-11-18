@@ -184,7 +184,11 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] Plant etapa 1 (v13, intertravamento reativo; pareado com v12_K4 nas variantes 2-10): k_max <= K sempre;
         K4 = v12 (0%); K3 270 kVA +0,39%; K2 180 kVA +1,45%; K1 90 kVA +14,6% (espera 121 s/carroceria);
         throughput -0,1 a -0,3 carroceria/turno. Bate com a previsão fora do Plant (2026-11-18)
-    [ ] Plant etapa 2: escalonamento planejado (acordar/frear cada robô na sua hora; tick de 1 s)
+    [x] Plano K=1 com fim <= 70 s exportado (otimiza_pico.py plano 1 70 -> resultados/otimizacao/plano_K1_fim70.json) (2026-11-18)
+    [x] politicas.py: política "plano" (robo_na_ordem, espera_ate_robo, inicio_robo, freios por robô no tick) +
+        reservar_solda respeitando o instante planejado; simulação por eventos: k_max 1, fim 69,9 s, espera 7,8/10,1 s (2026-11-18)
+    [ ] Plant etapa 2 (v14): def_inPosition com criação dos MUs por robô na sua vez; tick a 1 s;
+        cenários v14_freios_K4 (= v13_K4?) e v14_plano_K1 (esperado ~+1% vs v12, contra +14,6% do v13_K1)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

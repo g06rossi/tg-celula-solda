@@ -178,8 +178,10 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] coleta_plant.py grava os instantes brutos das soldas e das chegadas (inicios_s, chegadas_s) (2026-11-18)
     [x] OR-Tools 9.15 instalado no Python 3.13 (não há versão para o 3.15 do Plant); scripts/otimiza_pico.py (CP-SAT) (2026-11-18)
     [x] Otimização exata: K=1 cabe na janela (fim 61,5/63,2 s); fronteira fim x espera; K=3 de graça; K=1 com fim <= 70 s
-        custa ~1% de energia. Intertravamento reativo K=1 custa ~9% -> planejar corta ~90% do custo. docs/caminho2-pico-resultados.md (2026-11-18)
-    [ ] Plant etapa 1: intertravamento reativo K (reservar_solda + startPause(d + tempoSolda) nos 8 def_*; correção da energia da espera); K=3,2,1
+        custa ~1% de energia. Intertravamento reativo K=1 custa ~14% (corrigido; 1ª estimativa 9%) -> planejar corta ~94%. docs/caminho2-pico-resultados.md (2026-11-18)
+    [x] coleta_plant.py: reservar_solda (intertravamento reativo K, Variable int_K), ajuste_energia_kWh, mix pela contagem
+        de soldas; relatório com coluna de pico (kVA). Validado por simulação de eventos fora do Plant (2026-11-18)
+    [ ] Plant etapa 1 (v13): int_K + reservar_solda nos 8 def_*; cenários v13_K4/K3/K2/K1 (10 réplicas cada)
     [ ] Plant etapa 2: escalonamento planejado (acordar/frear cada robô na sua hora; tick de 1 s)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA

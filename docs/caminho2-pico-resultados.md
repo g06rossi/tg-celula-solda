@@ -34,18 +34,18 @@ Todos cabem na janela de 105,2 s. **Até K = 1 é viável com ~40 s de folga.** 
 **Leitura:** K = 3 é de graça; K = 2 é de graça com fim ≤ 60 s; **K = 1 com fim ≤ 70 s (35 s de folga) custa ~7–10 s de espera por carroceria ≈ 0,5 kWh por turno (~1% da energia da política `freios`).**
 
 ## 3. Intertravamento reativo (prática industrial, Farrow) × escalonamento planejado
-Reativo: todos os robôs começam na chegada; cada solda começa no primeiro instante com menos de K soldando.
+Reativo: todos os robôs começam na chegada; cada robô, ao pedir para soldar, entra na fila e recebe a primeira vaga com menos de K soldando (`reservar_solda` do `coleta_plant.py`, simulado fora do Plant por eventos). **Corrigido em 2026-11-18:** uma primeira estimativa, feita com um cálculo simplificado à parte, dava para K = 1 fim de 64,6/68,7 s e espera de 72/80 s; a simulação com o código que o Plant vai executar dá os valores abaixo.
 
 | | Reativo: fim / espera acordado | Ótimo (menor fim) |
 |---|---|---|
 | Hatch K=3 | 30,94 s / 1,5 s | 30,34 s |
-| Hatch K=2 | 33,32 s / 12,6 s | 33,00 s |
-| **Hatch K=1** | **64,61 s / 72,4 s** | 61,54 s |
+| Hatch K=2 | 33,00 s / 12,5 s | 33,00 s |
+| **Hatch K=1** | **61,80 s / 120,8 s** | 61,54 s |
 | Sedan K=3 | 33,54 s / 1,8 s | 32,98 s |
-| Sedan K=2 | 36,27 s / 13,9 s | 35,13 s |
-| **Sedan K=1** | **68,72 s / 79,8 s** | 63,19 s |
+| Sedan K=2 | 36,23 s / 13,4 s | 35,13 s |
+| **Sedan K=1** | **63,68 s / 120,9 s** | 63,19 s |
 
-**Achado:** com K = 1, o intertravamento reativo deixa os robôs ~76 s por carroceria acordados esperando a vez (≈ 5,3 kWh por turno, ~9%). O escalonamento **planejado**, com cada robô acordando na sua hora, faz o mesmo pico com ~0,5 kWh (~1%): **~90% a menos de custo de energia**. Com K = 2 ou 3, o reativo já fica perto do ótimo.
+**Achado:** com K = 1, o intertravamento reativo termina quase tão cedo quanto o ótimo, mas deixa os robôs **~121 s por carroceria acordados esperando a vez** (0,67 kW × 121 s ≈ 81 kJ por carroceria ≈ **8,4 kWh por turno, ~14%** da energia da política `freios`). O escalonamento **planejado** (fim ≤ 70 s, cada robô acordando na sua hora) faz o mesmo pico com ~0,5 kWh (~1%): **~94% a menos de custo de energia**. Com K = 2 ou 3, o reativo já fica perto do ótimo (custo ~1,5% e ~0,2%).
 
 ## Implementação no Plant (próximo passo)
 1. **Etapa 1, intertravamento reativo K** (`reservar_solda` no Python devolve o atraso d; `?.startPause(d + float_tempoSolda)` nos 8 `def_*`; o Python corrige a energia da espera, que o Plant cobra a 4,59 kW no Standby, para 0,84 kW). Cenários K = 3, 2, 1. Validação: K_max medido ≤ K, fim e esperas iguais à tabela 3.

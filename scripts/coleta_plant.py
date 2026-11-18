@@ -74,6 +74,8 @@ _serie = {"t": []}
 _eventos = []   # (tempo_s, nome): "chegada" e "todos_home" vindos do def_inPosition
 _soldas = []    # (tempo_s, robo): início de cada solda, vindo dos def_entranceR*/def_exitR* (caminho 2)
 KVA_PINCA = 90.0   # ABB GWT C9, transformador MFDC 90 kVA (S50)
+_reservas = []    # (inicio, fim) das soldas reservadas (intertravamento de K soldas simultâneas)
+_esperas = {}     # robo -> soma das esperas do intertravamento (s)
 
 
 def _num(v):
@@ -100,10 +102,12 @@ def _sim_time():
 
 
 def limpar_episodio():
-    global _serie, _eventos, _soldas
+    global _serie, _eventos, _soldas, _reservas, _esperas
     _serie = {"t": []}
     _eventos = []
     _soldas = []
+    _reservas = []
+    _esperas = {}
     h = globals().get("_politica_reset")   # politicas.py, se colado
     if h:
         h()
@@ -123,6 +127,49 @@ def solda(robo):
     """Registra o início de uma solda do robô (1..4). Chamado antes do startPause nos def_*."""
     _soldas.append((_sim_time(), int(robo)))
     return len(_soldas)
+
+
+def _k_limite():
+    """K = nº máximo de soldas simultâneas (Variable int_K do Frame; 4 = sem intertravamento)."""
+    try:
+        return max(1, int(_num(current.int_K.Value)))
+    except Exception:
+        return 4
+
+
+def reservar_solda(robo):
+    """Intertravamento reativo (Farrow 2004): devolve a espera d (s) até haver vaga para soldar
+    com no máximo K soldas simultâneas. No SimTalk: ?.startPause(d + float_tempoSolda).
+    Registra o início REAL da solda (agora + d) e a espera do robô."""
+    global _reservas
+    agora = _sim_time()
+    w = _attr(current.float_tempoSolda, "Value") or 1.6
+    K = _k_limite()
+    _reservas = [(s, e) for s, e in _reservas if e > agora + 1e-9]
+    t = agora
+    for cand in [agora] + sorted(e for s, e in _reservas):
+        if cand < agora:
+            continue
+        n = sum(1 for s, e in _reservas if s < cand + w - 1e-9 and e > cand + 1e-9)
+        if n < K:
+            t = cand
+            break
+    _reservas.append((t, t + w))
+    _soldas.append((t, int(robo)))
+    _esperas[int(robo)] = _esperas.get(int(robo), 0.0) + (t - agora)
+    return round(t - agora, 4)
+
+
+def _ajuste_energia():
+    """A espera do intertravamento fica dentro do startPause (Standby = potência de solda); o certo é o robô
+    parado com freios liberados (Operational). Devolve o ajuste (kWh, negativo) a somar à energia do Plant."""
+    tot = 0.0
+    for r, d in _esperas.items():
+        o = getattr(current, "ABB_IRB_6700_%d" % r)
+        ps = _attr(o, "PowerInputStandby") or 4.59
+        po = _attr(o, "PowerInputOperational") or 0.84
+        tot -= d * (ps - po) / 3600.0
+    return tot
 
 
 def _simultaneidade():
@@ -187,8 +234,13 @@ def _resumo_recurso(o):
 
 
 def _mix_estimado():
-    """Sedans = soldas extras do R2 (10ª solda só no sedan): (Standby R2 - Standby R1) / tempo de solda."""
+    """Sedans = soldas extras do R2 (10ª solda só no sedan). Usa a contagem de soldas registradas, se houver
+    (robusta ao intertravamento); senão (Standby R2 - Standby R1) / tempo de solda."""
     try:
+        if _soldas:
+            n = _attr(getattr(current, SAIDA), "StatNumIn") or 0.0
+            ns = sum(1 for _, r in _soldas if r == 2) - sum(1 for _, r in _soldas if r == 1)
+            return {"sedan": ns, "hatch": int(n) - ns, "metodo": "nº de soldas do R2 - nº de soldas do R1"}
         ts = _attr(current.float_tempoSolda, "Value") or 1.6
         st1 = _attr(current.ABB_IRB_6700_1, "StatEnergyStandbyTime") or 0.0
         st2 = _attr(current.ABB_IRB_6700_2, "StatEnergyStandbyTime") or 0.0
@@ -219,6 +271,8 @@ def fechar_episodio(cenario="base", replica=1):
         "mix": _mix_estimado(),
         "pausas_s": _pausas(),
         "soldas_simultaneas": _simultaneidade(),
+        "intertravamento": {"K": _k_limite(), "espera_s": {str(r): round(d, 2) for r, d in _esperas.items()}},
+        "ajuste_energia_kWh": _ajuste_energia(),
         "politica": globals()["_politica_info"]() if "_politica_info" in globals() else None,
         "recursos": {n: _resumo_recurso(getattr(current, n)) for n in RECURSOS},
         "serie": _serie,

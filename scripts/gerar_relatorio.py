@@ -90,6 +90,7 @@ def kpis(ep):
     sim = ep["sim_time_s"] or 1
     total = ep.get("energia_total_frame") or sum((r["energia_total"] or 0) for r in rec.values())
     total += sum((r.get("energia_arco") or 0) for r in rec.values())   # arco somado no Python (opção B)
+    total += ep.get("ajuste_energia_kWh") or 0                         # espera do intertravamento (caminho 2)
     thr = ep["throughput"] or 0
     ocioso = [((rec[r]["tempo_energia"].get("Operational") or 0) / sim) for r in robos]
     trabalhando = [((rec[r]["tempo_energia"].get("Working") or 0) / sim) for r in robos]
@@ -103,6 +104,7 @@ def kpis(ep):
         "standby_medio": statistics.mean(standby) if standby else None,
         "horas": sim / 3600,
         "sedans": (ep.get("mix") or {}).get("sedan"),
+        "kva_pico": (ep.get("soldas_simultaneas") or {}).get("kva_pico"),
     }
 
 
@@ -253,12 +255,12 @@ def gerar(pasta):
             return f"{fmt(m * f, casas)} ± {fmt(ic * f, casas)}" + ("%" if pct else "")
         linhas.append([html.escape(c), len(lst), mi("energia_por_carroceria", 3), mi("throughput", 1),
                        mi("energia_total", 1), mi("ociosidade_media", 1, True), mi("trabalho_medio", 1, True),
-                       mi("standby_medio", 1, True), mi("sedans", 1)])
+                       mi("standby_medio", 1, True), mi("sedans", 1), mi("kva_pico", 0)])
     partes.append("<h2>Comparação entre cenários</h2>")
     ep0 = eps[0]
     partes.append(tabela(["Cenário", "Replicações", "Energia / carroceria", "Carrocerias", "Energia total",
                           "Robôs: " + nome(ep0, "Operational"), "Robôs: " + nome(ep0, "Working"),
-                          "Robôs: " + nome(ep0, "Standby"), "Sedans"], linhas))
+                          "Robôs: " + nome(ep0, "Standby"), "Sedans", "Pico de solda (kVA)"], linhas))
     if len(grupos) > 1:
         partes.append(emb(fig_comparacao(grupos)))
 

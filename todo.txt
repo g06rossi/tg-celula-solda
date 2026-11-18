@@ -176,8 +176,11 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         103,9 s); sedan só a K_max 2 (104,9 s); K_max 3 com fim em ~54 s. CUSTO: robôs esperando a vez a 0,84 kW
         = ~10 kWh/turno (+17%) se acordarem na chegada -> acordar cada robô na sua hora (2026-11-18)
     [x] coleta_plant.py grava os instantes brutos das soldas e das chegadas (inicios_s, chegadas_s) (2026-11-18)
-    [ ] Instalar solver (OR-Tools CP-SAT ou scipy/HiGHS) e otimizar com esperas entre soldas (intertravamento): fronteira K x fim do ciclo x energia
-    [ ] Implementar no Plant o escalonamento escolhido (criação defasada dos MUs SOLDA por robô + acordar cada robô na sua hora) e validar
+    [x] OR-Tools 9.15 instalado no Python 3.13 (não há versão para o 3.15 do Plant); scripts/otimiza_pico.py (CP-SAT) (2026-11-18)
+    [x] Otimização exata: K=1 cabe na janela (fim 61,5/63,2 s); fronteira fim x espera; K=3 de graça; K=1 com fim <= 70 s
+        custa ~1% de energia. Intertravamento reativo K=1 custa ~9% -> planejar corta ~90% do custo. docs/caminho2-pico-resultados.md (2026-11-18)
+    [ ] Plant etapa 1: intertravamento reativo K (reservar_solda + startPause(d + tempoSolda) nos 8 def_*; correção da energia da espera); K=3,2,1
+    [ ] Plant etapa 2: escalonamento planejado (acordar/frear cada robô na sua hora; tick de 1 s)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

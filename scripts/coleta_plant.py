@@ -138,7 +138,10 @@ def _simultaneidade():
         k += d; ult = t; kmax = max(kmax, k)
     return {"n_soldas": len(_soldas), "k_max": kmax, "kva_pico": kmax * KVA_PINCA,
             "tempo_por_k_s": {str(kk): round(v, 2) for kk, v in sorted(tempo.items())},
-            "por_robo": {str(r): sum(1 for _, x in _soldas if x == r) for r in range(1, 5)}}
+            "por_robo": {str(r): sum(1 for _, x in _soldas if x == r) for r in range(1, 5)},
+            # dados brutos para análise fora do Plant (scripts/analise_soldas.py)
+            "inicios_s": {str(r): [round(t, 3) for t, x in _soldas if x == r] for r in range(1, 5)},
+            "chegadas_s": [round(t, 3) for t, n in _eventos if n == "chegada"]}
 
 
 def _pausas():

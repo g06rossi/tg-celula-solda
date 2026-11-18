@@ -168,7 +168,16 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
           manutenção oportunista antes de decidir
 [~] CAMINHO 2 (AGORA): pico de potência das soldas
     [x] coleta_plant.py: solda(robo) + soldas_simultaneas (k_max, kVA de pico, tempo em cada K), testado com mock (2026-11-18)
-    [ ] v12 = v11 + PythonModule.call("solda", r) nos 8 def_*; política freios; 10 réplicas (v12_K4): medir a linha de base
+    [x] v12_K4 (10 réplicas, freios): resultados idênticos ao v11_freios; n_soldas = Standby/1,6 (registro validado);
+        K_max = 4 (360 kVA) em todas; do tempo com solda: K1 32,7%, K2 16,2%, K3 30,7%, K4 20,5% (~5 s/carroceria com
+        os 4 soldando juntos) (2026-11-18)
+    [x] Linha do tempo reconstruída fora do Plant (TT do cenário H) reproduz a v12 com erro < 1% em todos os K (2026-11-18)
+    [x] Defasagem do início dos robôs (busca em grade, janela de 105,2 s = takt - skid): hatch chega a K_max 1 (fim em
+        103,9 s); sedan só a K_max 2 (104,9 s); K_max 3 com fim em ~54 s. CUSTO: robôs esperando a vez a 0,84 kW
+        = ~10 kWh/turno (+17%) se acordarem na chegada -> acordar cada robô na sua hora (2026-11-18)
+    [x] coleta_plant.py grava os instantes brutos das soldas e das chegadas (inicios_s, chegadas_s) (2026-11-18)
+    [ ] Instalar solver (OR-Tools CP-SAT ou scipy/HiGHS) e otimizar com esperas entre soldas (intertravamento): fronteira K x fim do ciclo x energia
+    [ ] Implementar no Plant o escalonamento escolhido (criação defasada dos MUs SOLDA por robô + acordar cada robô na sua hora) e validar
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

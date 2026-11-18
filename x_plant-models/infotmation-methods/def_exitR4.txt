@@ -3,8 +3,8 @@
 -- Se nao for o ponto de limpeza, deve aguardar o tempo da solda e somar um ponto
 if int_pontoR4 < 9
 	int_pontoR4 := int_pontoR4 + 1
-	var nS : integer := PythonModule.call("solda", 4)
-	?.startPause(float_tempoSolda)
+	var d : real := PythonModule.call("reservar_solda", 4)
+	?.startPause(d + float_tempoSolda)
 	@.move
 
 -- Se for o ponto de limpeza, deve resetar a variavel e seguir sem pausa

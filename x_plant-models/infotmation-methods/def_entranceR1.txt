@@ -3,7 +3,6 @@
 -- Soma um ponto de solda do robo R1
 int_pontoR1 := int_pontoR1 + 1
 
-var nS : integer := PythonModule.call("solda", 1)
+var d : real := PythonModule.call("reservar_solda", 1)
+?.startPause(d + float_tempoSolda)
 
--- Considera tempo de solda
-?.startPause(float_tempoSolda)

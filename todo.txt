@@ -181,7 +181,9 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         custa ~1% de energia. Intertravamento reativo K=1 custa ~14% (corrigido; 1ª estimativa 9%) -> planejar corta ~94%. docs/caminho2-pico-resultados.md (2026-11-18)
     [x] coleta_plant.py: reservar_solda (intertravamento reativo K, Variable int_K), ajuste_energia_kWh, mix pela contagem
         de soldas; relatório com coluna de pico (kVA). Validado por simulação de eventos fora do Plant (2026-11-18)
-    [ ] Plant etapa 1 (v13): int_K + reservar_solda nos 8 def_*; cenários v13_K4/K3/K2/K1 (10 réplicas cada)
+    [x] Plant etapa 1 (v13, intertravamento reativo; pareado com v12_K4 nas variantes 2-10): k_max <= K sempre;
+        K4 = v12 (0%); K3 270 kVA +0,39%; K2 180 kVA +1,45%; K1 90 kVA +14,6% (espera 121 s/carroceria);
+        throughput -0,1 a -0,3 carroceria/turno. Bate com a previsão fora do Plant (2026-11-18)
     [ ] Plant etapa 2: escalonamento planejado (acordar/frear cada robô na sua hora; tick de 1 s)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA

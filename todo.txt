@@ -241,6 +241,16 @@ FASE 4 - EXPERIMENTOS E TEXTO
 [ ] [M] 17. Atualizar a revisão sistemática (I5.0, RL + DES, energia em robôs) e corrigir as inconsistências da IC
 
 ================================================================================
+TEXTO DO TCC
+================================================================================
+[x] Revisão do relatório preliminar (v_relatorios/preliminar_tg2.pdf, coautor Fabio de Zhi Wu):
+    docs/revisao-preliminar_tg2.md (2026-11-25)
+[ ] Capítulo de resultados até o caminho 2 (saneamento v1-v7, v10, políticas v11, pico v13/v16)
+[ ] Reescrever problemática/hipóteses/objetivos (sem H4/sequência; RL -> manutenção; incluir o pico)
+[ ] Corrigir os erros de fato (Škoda 6 robôs, "estimado", 90 kVA, startPause, PROFIenergy, Alaka...)
+[ ] Completar as referências e remover as não citadas; figuras; resumo
+
+================================================================================
 INFRA / PARALELO
 ================================================================================
 [x] git init + commit inicial na branch main; .gitignore sem .bak, cache e relatorio.html (2026-11-09)

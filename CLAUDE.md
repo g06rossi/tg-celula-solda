@@ -195,8 +195,10 @@ TG/
     ├── politicas.py          políticas de economia (nenhuma/freios/timeout), colar abaixo da coleta no PythonModule
     ├── otimiza_pico.py       caminho 2: escalonamento ótimo das soldas com K simultâneas (CP-SAT; rodar com o Python 3.13)
     └── resultados/           JSONs dos episódios + relatorio.html
+├── v_relatorios/            relatórios do TCC (preliminar_tg2.pdf; coautor Fabio de Zhi Wu)
 ├── docs/
-│   └── opcoes-A-B-C-economia-RL.md   decisão das opções A/B/C (Fase 1 e RL), com referências, implementação e análise
+│   ├── opcoes-A-B-C-economia-RL.md   decisão das opções A/B/C (Fase 1 e RL), com referências, implementação e análise
+│   └── revisao-preliminar_tg2.md     revisão do relatório preliminar e o que falta para o ponto de estabilidade
 ```
 O workspace **é um repositório Git** (branch `main`, desde 2026-11-09), com remoto `origin` = **github.com/g06rossi/tg-celula-solda** (privado). O `.gitignore` exclui `*.spp.bak`, `__pycache__` e o `relatorio.html` (regenerável). Os `.spp` (~3,8 MB cada) e os PDFs entram no repositório, que deve ser **privado** (há documentação interna da FMEIB e PDFs de terceiros). **Commitar a cada etapa concluída** (o usuário faz o push).
 
@@ -421,3 +423,4 @@ Velocidade realista (item 2): **não há fonte forte para a V**. A regra de 3,3 
 - **2026-11-25:** caminho 2 concluído: escalonamento planejado K = 1 com +0,74% de energia contra +14,62% do intertravamento reativo (mesmo pico de 90 kVA). Documento `docs/caminho2-pico-resultados.md` atualizado.
 - **2026-11-25:** escopo fechado: caminho 1 é a última expansão; o RL será aplicado à manutenção oportunista. Proposto o corte dos itens 9 e 10.
 - **2026-11-25:** itens 9 e 10 cortados (padrão de processo da FMEIB). A pesquisa do caminho 1 fica adiada a pedido do usuário (outra tarefa antes). Referências já localizadas para retomar: Mechefske e Zeng, *Opportunistic electrode replacement in a robotic spot welding system*, IJCIM, pp. 481–489, DOI 10.1080/09511920500399284; Huang, Chang e Arinez, ESWA 160 (2020) 113701.
+- **2026-11-25:** revisado o relatório preliminar `v_relatorios/preliminar_tg2.pdf` (coautores Fabio de Zhi Wu e Giovanni Rossi): `docs/revisao-preliminar_tg2.md`. Principais pontos: falta o capítulo de resultados; texto desatualizado (sequência ótima/H4 cortadas, RL redirecionado, caminho 2 ausente); erros de fato (Škoda com 6 robôs, 6,8%/12% estimados, 90 kVA, startPause, PROFIenergy, Alaka); referências incompletas.

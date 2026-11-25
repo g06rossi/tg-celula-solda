@@ -195,7 +195,10 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         (r02-r10 param após a 1ª carroceria, r01 após 8). Suspeita: Pause = true nos robôs com freios (Off) (2026-11-25)
     [x] Variante 1: v14/v15 (variante ajustada antes do Reset) = variante 1 verdadeira; as "r01" de v10-v13 usaram
         outra sequência -> excluir a variante 1 das comparações pareadas com cenários antigos (2026-11-25)
-    [ ] v16: waituntil sem os Pause = false; EXPORTAR def_inPosition + 4 def_exitR* antes de rodar; v16_plano_K1 (1 rodada, depois 9)
+    [x] v16_plano_K1 (1 rodada, sem Pause): travou de novo após 8 carrocerias, TODAS sedans; trava na 1ª hatch.
+        Diagnóstico provável: os 2 waituntil antigos do R1 continuam no def_inPosition (no hatch o R1 termina aos ~30 s,
+        antes de o def_inPosition terminar de criar os MUs aos 37,5 s) (2026-11-25)
+    [ ] Apagar os 2 waituntil do R1; EXPORTAR o def_inPosition e os def_exitR* para conferência; v16_plano_K1 (1 rodada, depois 9)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

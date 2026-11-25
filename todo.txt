@@ -209,7 +209,8 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
 [ ] CAMINHO 1 (PRÓXIMO; ÚLTIMA EXPANSÃO DO MODELO, decisão do usuário em 2026-11-25): pesquisar manutenção oportunista
     (estado da arte + política clássica) e decidir; é o problema em que o RL será aplicado (Fase 3)
     [ ] Prototipar cedo a integração de TREINO do RL com o Plant (risco da inversão de controle)
-[ ] Proposta: cortar os itens 9 (sequência ótima de pontos) e 10 (distribuição dos 40 pontos) -> aguardando o usuário
+[x] Itens 9 e 10 CORTADOS: a sequência de pontos e a distribuição entre robôs seguem o padrão de processo da célula
+    de referência da FMEIB (decisão do usuário, 2026-11-25)
     [ ] Grade de sensibilidade: A 95/85/72% x MTTR 5/10/15 min
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)
@@ -221,8 +222,8 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
 ================================================================================
 FASE 2 - OTIMIZAÇÃO CLÁSSICA (BASELINES)
 ================================================================================
-[ ] [M] 9. Sequência ótima de pontos por robô (força bruta ou PD, 9!)
-[ ] [D] 10. Distribuir os 40 pontos entre os robôs (GA/NSGA-II)
+[-] 9. CORTADO (padrão de processo da FMEIB) - sequência ótima de pontos por robô
+[-] 10. CORTADO (padrão de processo da FMEIB) - distribuir os 40 pontos entre os robôs
 [ ] [M] 11. Timeout de standby otimizado (ExperimentManager/GAWizard)
 
 ================================================================================

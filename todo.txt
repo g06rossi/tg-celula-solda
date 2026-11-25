@@ -191,8 +191,11 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         outra sequência porque a variante foi ajustada DEPOIS do Reset (instrução errada) (2026-11-25)
     [x] v14_plano_K1 TRAVOU (throughput 0): o def_inPosition só chega aos waituntil do R1 depois de criar o último
         robô (37,5 s) e o R1 do hatch já terminou aos ~30 s -> espera eterna (2026-11-25)
-    [ ] v15: contador int_concluidos (else dos 4 def_exitR*) + um único waituntil (4 concluídos, todos parados e sem
-        Pause); conferir os Methods exportados; cenários v15_freios_K4 (= v13_K4) e v15_plano_K1
+    [x] v15: v15_freios_K4 = v13_K4 nas variantes 2-10 (a espera nova equivale à antiga); v15_plano_K1 AINDA TRAVA
+        (r02-r10 param após a 1ª carroceria, r01 após 8). Suspeita: Pause = true nos robôs com freios (Off) (2026-11-25)
+    [x] Variante 1: v14/v15 (variante ajustada antes do Reset) = variante 1 verdadeira; as "r01" de v10-v13 usaram
+        outra sequência -> excluir a variante 1 das comparações pareadas com cenários antigos (2026-11-25)
+    [ ] v16: waituntil sem os Pause = false; EXPORTAR def_inPosition + 4 def_exitR* antes de rodar; v16_plano_K1 (1 rodada, depois 9)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

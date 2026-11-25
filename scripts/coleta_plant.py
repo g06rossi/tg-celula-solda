@@ -187,7 +187,8 @@ def _simultaneidade():
     for t, d in ev:
         if ult is not None and t > ult:
             tempo[k] = tempo.get(k, 0.0) + (t - ult)
-        k += d; ult = t; kmax = max(kmax, k)
+        k += d; ult = t
+    kmax = max([kk for kk, v in tempo.items() if v > 1e-6] or [0])   # ignora níveis de duração ~0 (arredondamento)
     return {"n_soldas": len(_soldas), "k_max": kmax, "kva_pico": kmax * KVA_PINCA,
             "tempo_por_k_s": {str(kk): round(v, 2) for kk, v in sorted(tempo.items())},
             "por_robo": {str(r): sum(1 for _, x in _soldas if x == r) for r in range(1, 5)},

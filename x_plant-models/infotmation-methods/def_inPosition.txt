@@ -4,6 +4,9 @@
 var r, p: integer                              -- Inteiros para os Loops
 var robo, ponto_solda: object                  -- Define o robo e ponto atual da logica
 var tabela_tempos, tabela_coords: object       -- Define as tabelas a serem usadas
+var nEv: integer                               -- Contador de eventos (coleta de pausas)
+var k: integer                                 -- Ordem de inicio dos robos (escalonamento)
+var dt: real                                   -- Espera ate a vez do robo (s)
 
 -- Se MU for HATCH
 if @.name = "BIY_HATCH" then
@@ -17,6 +20,8 @@ elseif @.name = "BIY_SEDAN" then
 end
 
 str_modeloAtual := @.name
+
+nEv := PythonModule.call("evento", "chegada")
 
 -- Atualiza as tabelas de tempos dos quatro robos
 for r := 1 to 4 loop
@@ -51,28 +56,33 @@ next
 -- Apos definir o BIY e os pontos, para o SKID
 SKID_EFQ_3.startPause;
 
--- Laco externo para P (sources -> pontos impares)
--- Um determinado inteiro impar equivale ao dobro de sua posicao na sequencia subtraido de um
--- Comeca criando o primeiro ponto de solda de cada robo para tornar o processo mais sincrono
-for p := 1 to 5 loop
-    -- Laco interno para os robos (R1 a R4)
-    for r := 1 to 4 loop
-        -- create -> cria o MU (SOLDA) no objeto [R(r)_P(2*p - 1)]
+-- ESCALONAMENTO (caminho 2): cada robo comeca na sua vez (politica "plano").
+-- Nas outras politicas, ordem 1..4 sem espera (equivale ao bloco original).
+int_concluidos := 0
+
+for k := 1 to 4 loop
+    dt := PythonModule.call("espera_ate_robo", k)
+    if dt > 0 then
+        wait dt
+    end
+    r := PythonModule.call("robo_na_ordem", k)
+    nEv := PythonModule.call("inicio_robo", r)
+    if str_politica = "plano" then
+        wait 0.2
+    end
+    for p := 1 to 5 loop
         ~.~.UserObjects.SOLDA.create(str_to_obj("R" + to_str(r) + "_P" + to_str(2*p - 1)));
     next
 next
 
--- Espera ate que o robo R1 esteja no ultimo ponto
-waituntil (ABB_IRB_6700_1.resWorking = false and int_pontoR1 = 9) prio 1;
+-- Espera os 4 robos terminarem a carroceria e estarem parados no home
+waituntil int_concluidos = 4 and
+          ABB_IRB_6700_1.resWorking = false and
+          ABB_IRB_6700_2.resWorking = false and
+          ABB_IRB_6700_3.resWorking = false and
+          ABB_IRB_6700_4.resWorking = false prio 1;
 
--- Espera ate que o robo R1 esteja se movendo para a posicao de repouso
-waituntil (ABB_IRB_6700_1.resWorking = true and int_pontoR1 = 0) prio 1;
-
--- Espera ate que todos os robos estejam na posicao de repouso
-waituntil (ABB_IRB_6700_1.resWorking = false and int_pontoR1 = 0) and
-          (ABB_IRB_6700_2.resWorking = false and int_pontoR2 = 0) and
-          (ABB_IRB_6700_3.resWorking = false and int_pontoR3 = 0) and
-          (ABB_IRB_6700_4.resWorking = false and int_pontoR4 = 0) prio 1;
+nEv := PythonModule.call("evento", "todos_home")
 
 -- Ativa o SKID
 SKID_EFQ_3.pause = false;

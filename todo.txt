@@ -198,7 +198,10 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
     [x] v16_plano_K1 (1 rodada, sem Pause): travou de novo após 8 carrocerias, TODAS sedans; trava na 1ª hatch.
         Diagnóstico provável: os 2 waituntil antigos do R1 continuam no def_inPosition (no hatch o R1 termina aos ~30 s,
         antes de o def_inPosition terminar de criar os MUs aos 37,5 s) (2026-11-25)
-    [ ] Apagar os 2 waituntil do R1; EXPORTAR o def_inPosition e os def_exitR* para conferência; v16_plano_K1 (1 rodada, depois 9)
+    [x] Diagnóstico confirmado: def_inPosition exportado sem os 2 waituntil do R1 (o r01 ainda tinha). v16_plano_K1_r02
+        (variante 2): 374 carrocerias (freios 375), +0,68% de energia vs freios, -12,1% vs reativo v13_K1, pico de
+        1 solda (o "K=2" tinha duração 0,0 s: arredondamento; métrica corrigida no coleta) (2026-11-25)
+    [ ] Rodar as 10 réplicas do v16_plano_K1 (refazer a r01, que estava com o código antigo)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
 [ ] CAMINHO 1: pesquisar manutenção oportunista (estado da arte + política clássica) e decidir

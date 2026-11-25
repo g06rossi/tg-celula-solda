@@ -206,7 +206,10 @@ FASE 1 - PILARES DA INDÚSTRIA 5.0
         O planejamento elimina ~95% do custo de energia do intertravamento. CAMINHO 2 CONCLUÍDO (2026-11-25)
     [ ] Intertravamento K (4/3/2/1 soldas simultâneas) via reservar_solda no Python + correção da energia da espera
     [ ] Otimização exata (MILP/CP) do escalonamento por modelo de carroceria: curva K x makespan x kVA
-[ ] CAMINHO 1 (PRÓXIMO): pesquisar manutenção oportunista (estado da arte + política clássica) e decidir
+[ ] CAMINHO 1 (PRÓXIMO; ÚLTIMA EXPANSÃO DO MODELO, decisão do usuário em 2026-11-25): pesquisar manutenção oportunista
+    (estado da arte + política clássica) e decidir; é o problema em que o RL será aplicado (Fase 3)
+    [ ] Prototipar cedo a integração de TREINO do RL com o Plant (risco da inversão de controle)
+[ ] Proposta: cortar os itens 9 (sequência ótima de pontos) e 10 (distribuição dos 40 pontos) -> aguardando o usuário
     [ ] Grade de sensibilidade: A 95/85/72% x MTTR 5/10/15 min
     [ ] OPÇÃO C: falhas dos robôs + operador (Worker/Broker/FootPath)
     [ ] Aplicar a economia nos 4 robôs (estimativa: ~67,7 kWh, -33%)

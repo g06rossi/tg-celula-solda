@@ -195,7 +195,8 @@ TG/
     ├── politicas.py          políticas de economia (nenhuma/freios/timeout), colar abaixo da coleta no PythonModule
     ├── otimiza_pico.py       caminho 2: escalonamento ótimo das soldas com K simultâneas (CP-SAT; rodar com o Python 3.13)
     └── resultados/           JSONs dos episódios + relatorio.html
-├── v_relatorios/            relatórios do TCC (preliminar_tg2.pdf; coautor Fabio de Zhi Wu)
+├── v_relatorios/            relatórios do TCC (coautor Fabio de Zhi Wu): preliminar_tg2.pdf (original) e
+│                            preliminar_tg2_vN.docx (versões limpas; v1 = PDF, v2 = com resultados até o caminho 2)
 ├── docs/
 │   ├── opcoes-A-B-C-economia-RL.md   decisão das opções A/B/C (Fase 1 e RL), com referências, implementação e análise
 │   └── revisao-preliminar_tg2.md     revisão do relatório preliminar e o que falta para o ponto de estabilidade
@@ -424,3 +425,4 @@ Velocidade realista (item 2): **não há fonte forte para a V**. A regra de 3,3 
 - **2026-11-25:** escopo fechado: caminho 1 é a última expansão; o RL será aplicado à manutenção oportunista. Proposto o corte dos itens 9 e 10.
 - **2026-11-25:** itens 9 e 10 cortados (padrão de processo da FMEIB). A pesquisa do caminho 1 fica adiada a pedido do usuário (outra tarefa antes). Referências já localizadas para retomar: Mechefske e Zeng, *Opportunistic electrode replacement in a robotic spot welding system*, IJCIM, pp. 481–489, DOI 10.1080/09511920500399284; Huang, Chang e Arinez, ESWA 160 (2020) 113701.
 - **2026-11-25:** revisado o relatório preliminar `v_relatorios/preliminar_tg2.pdf` (coautores Fabio de Zhi Wu e Giovanni Rossi): `docs/revisao-preliminar_tg2.md`. Principais pontos: falta o capítulo de resultados; texto desatualizado (sequência ótima/H4 cortadas, RL redirecionado, caminho 2 ausente); erros de fato (Škoda com 6 robôs, 6,8%/12% estimados, 90 kVA, startPause, PROFIenergy, Alaka); referências incompletas.
+- **2026-11-25:** gerada `v_relatorios/preliminar_tg2_v2.docx` (versão limpa a partir da v1, editada por script com python-docx no Python 3.13): correções da revisão, capítulo 3 de resultados (versões v1–v7, ociosidade, paradas e políticas, pico de solda, observações de implementação), 2.3.5 trocada por "Otimização do pico de solda", H4 = pico, H1/RL e operador como [A FAZER], referências em ordem alfabética com [A COMPLETAR] onde falta dado. Comentários do Fabio removidos (tratados na versão). Validada (XSD) e conferida em PDF exportado pelo Word (47 páginas).

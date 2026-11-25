@@ -245,10 +245,16 @@ TEXTO DO TCC
 ================================================================================
 [x] Revisão do relatório preliminar (v_relatorios/preliminar_tg2.pdf, coautor Fabio de Zhi Wu):
     docs/revisao-preliminar_tg2.md (2026-11-25)
-[ ] Capítulo de resultados até o caminho 2 (saneamento v1-v7, v10, políticas v11, pico v13/v16)
-[ ] Reescrever problemática/hipóteses/objetivos (sem H4/sequência; RL -> manutenção; incluir o pico)
-[ ] Corrigir os erros de fato (Škoda 6 robôs, "estimado", 90 kVA, startPause, PROFIenergy, Alaka...)
-[ ] Completar as referências e remover as não citadas; figuras; resumo
+[x] v_relatorios/preliminar_tg2_v2.docx (versão limpa a partir da v1, 2026-11-25): capítulo 3 de resultados
+    até o caminho 2; problemática/hipóteses/objetivos reescritos (H4 = pico; H1 em template); erros de fato
+    corrigidos; 2.3.5 = otimização do pico; referências reordenadas e completadas; comentários do Fabio
+    removidos (tratados nesta versão). O que não foi feito ficou como [A FAZER].
+[ ] Pendências marcadas na v2: [A COMPLETAR] em 9 referências (EPE, Cenário Energia, Donders, Loffredo x3,
+    Müller, Schmidl, Yokogawa, OR-Tools) e [A CONFERIR] no 1.1; citar ou retirar 6 referências não citadas;
+    apêndice A (tabelas da IC); figuras; listas de ilustrações/tabelas; atualizar o sumário (F9 no Word)
+[ ] Conferir as referências preenchidas de memória (Mouzon 2007, Paryanto 2015, Henderson 2018, Raffin 2021,
+    Xu 2021, Schulman 2017): não há PDF em z_references
+[ ] Resumo, abstract e considerações finais (ao final)
 
 ================================================================================
 INFRA / PARALELO
